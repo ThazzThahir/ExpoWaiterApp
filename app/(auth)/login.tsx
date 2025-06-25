@@ -21,14 +21,13 @@ export default function LoginScreen() {
     const { users } = useAuthStore();
 
     const handleDemoLogin = () => {
-        if (users.length > 0) {
-            Alert.alert(
-                "Demo Accounts",
-                "You can use these accounts to login:\n\n" +
-                users.map(user => `Username: ${user.username}\nPassword: ${user.password}\n`).join('\n'),
-                [{ text: "OK" }]
-            );
-        }
+        Alert.alert(
+            "Demo Accounts",
+            "You can use these accounts to login:\n\n" +
+            "Username: admin\nPassword: 12345\n\n" +
+            "Username: staff\nPassword: password",
+            [{ text: "OK" }]
+        );
     };
 
     return (

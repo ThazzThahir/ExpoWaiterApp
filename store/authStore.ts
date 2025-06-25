@@ -17,7 +17,7 @@ interface AuthState {
 
 // Initial mock users
 const INITIAL_USERS: AuthUser[] = [
-    { id: '1', username: 'admin', password: 'password', name: 'Admin User', role: 'admin' as const },
+    { id: '1', username: 'admin', password: '12345', name: 'Admin User', role: 'admin' as const },
     { id: '2', username: 'staff', password: 'password', name: 'Staff User', role: 'staff' as const },
 ];
 
