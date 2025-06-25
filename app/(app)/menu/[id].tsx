@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import {
     StyleSheet,
     View,
@@ -34,7 +34,7 @@ export default function MenuItemDetailScreen() {
     const { addToCart } = useCartStore();
 
     const menuItem = getMenuItemById(id);
-    const modifierGroups = getModifierGroupsForItem(id);
+    const modifierGroups = useMemo(() => getModifierGroupsForItem(id), [id, getModifierGroupsForItem]);
 
     const [quantity, setQuantity] = useState(1);
     const [selectedModifiers, setSelectedModifiers] = useState<Modifier[]>([]);
@@ -71,7 +71,7 @@ export default function MenuItemDetailScreen() {
         });
 
         setSelectedModifiers(defaultModifiers);
-    }, [modifierGroups]);
+    }, [fadeAnim, slideAnim, modifierGroups]);
 
     const handleIncreaseQuantity = () => {
         if (Platform.OS !== 'web') {
