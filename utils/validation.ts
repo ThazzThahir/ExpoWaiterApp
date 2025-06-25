@@ -1,10 +1,10 @@
 export const validateUsername = (username: string): string | null => {
     if (!username) {
-        return 'Username is required';
+        return "Username is required";
     }
 
     if (username.length < 3) {
-        return 'Username must be at least 3 characters';
+        return "Username must be at least 3 characters";
     }
 
     return null;
@@ -12,11 +12,11 @@ export const validateUsername = (username: string): string | null => {
 
 export const validatePassword = (password: string): string | null => {
     if (!password) {
-        return 'Password is required';
+        return "Password is required";
     }
 
-    if (password.length < 6) {
-        return 'Password must be at least 6 characters';
+    if (password.length < 5) {
+        return "Password must be at least 6 characters";
     }
 
     return null;
@@ -28,7 +28,7 @@ export const formatCurrency = (amount: number): string => {
 
 export const formatDate = (dateString: string): string => {
     const date = new Date(dateString);
-    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 };
 
 export const formatDuration = (startDateString: string): string => {
