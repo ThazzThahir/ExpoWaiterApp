@@ -38,7 +38,7 @@ mode = "sequential"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "bun run expo start --tunnel"
+args = "expo start --tunnel"
 
 [[workflows.workflow]]
 name = "Start Expo LAN"
