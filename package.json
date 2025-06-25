@@ -2,11 +2,10 @@
     "name": "expo-app",
     "main": "expo-router/entry",
     "version": "1.0.0",
-    "type": "module",
     "scripts": {
         "start": "bun run expo start",
         "android": "bun run expo start --android",
-        "ios": "bun run expo start --ios --host 0.0.0.0",
+        "ios": "bun run expo start --ios",
         "web": "bun run expo start --web"
     },
     "dependencies": {

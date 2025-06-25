@@ -48,3 +48,12 @@ mode = "sequential"
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "bun run expo start --lan"
+
+[[workflows.workflow]]
+name = "Start Expo Web"
+author = 44238966
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "bun run expo start --web --port 5000"
