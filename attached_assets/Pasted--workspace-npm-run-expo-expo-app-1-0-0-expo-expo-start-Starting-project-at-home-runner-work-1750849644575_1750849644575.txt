@@ -1,0 +1,68 @@
+~/workspace$ npm run expo
+
+> expo-app@1.0.0 expo
+> expo start
+
+Starting project at /home/runner/workspace
+Starting Metro Bundler
+The following packages should be updated for best compatibility with the installed expo version:
+  expo@53.0.11 - expected version: 53.0.12
+  expo-system-ui@5.0.8 - expected version: ~5.0.9
+  expo-web-browser@14.1.6 - expected version: ~14.2.0
+  react@18.2.0 - expected version: 19.0.0
+  react-native@0.79.3 - expected version: 0.79.4
+Your project may not work correctly until you install the expected versions of the packages.
+▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄
+█ ▄▄▄▄▄ █▄▄▄ ▀ ██▄█ ▄▄▄▄▄ █
+█ █   █ ██▄▀ █ ▀▀▀█ █   █ █
+█ █▄▄▄█ ██▀▄ ▄▀██▀█ █▄▄▄█ █
+█▄▄▄▄▄▄▄█ ▀▄█ ▀ █▄█▄▄▄▄▄▄▄█
+█  █  ▀▄█▀▄▀█▄▀█▀▀█▄█▀█▀▀▄█
+██  █  ▄▄█▄██▄▄▄ ▀▀███▄▀▀ █
+█ ▀▀▄██▄ █  █▀█▄ █ ▄▀▀█▀ ██
+█ ▄▄▀  ▄█▀███▀▄▀▄▀▀▄▀ ▄▀  █
+█▄████▄▄█ █▀ ▄▄   ▄▄▄  ▄▀▄█
+█ ▄▄▄▄▄ ██▄█▀▄  █ █▄█ ███ █
+█ █   █ █ ▀█▄ ▀█▄▄▄  ▄ █▀▀█
+█ █▄▄▄█ █▀██ ▀█▄█▄▀▀▀▄█   █
+█▄▄▄▄▄▄▄█▄▄▄▄██▄▄▄█▄▄▄███▄█
+
+› Metro waiting on exp://172.31.128.42:8081
+› Scan the QR code above with Expo Go (Android) or the Camera app (iOS)
+
+› Web is waiting on http://localhost:8081
+
+› Using Expo Go
+› Press s │ switch to development build
+
+› Press a │ open Android
+› Press w │ open web
+
+› Press j │ open debugger
+› Press r │ reload app
+› Press m │ toggle menu
+› shift+m │ more tools
+› Press o │ open project code in your editor
+
+› Press ? │ show all commands
+
+Logs for your project will appear below. Press Ctrl+C to exit.
+Web Bundling failed 252ms node_modules/expo-router/entry.js (1 module)
+ ERROR  node_modules/expo-router/entry.js: Cannot find module 'react-native-reanimated/plugin'
+Require stack:
+- /home/runner/workspace/node_modules/@babel/core/lib/config/files/plugins.js
+- /home/runner/workspace/node_modules/@babel/core/lib/config/files/index.js
+- /home/runner/workspace/node_modules/@babel/core/lib/index.js
+- /home/runner/workspace/node_modules/@expo/metro-config/build/transform-worker/metro-transform-worker.js
+- /home/runner/workspace/node_modules/@expo/metro-config/build/transform-worker/transform-worker.js
+- /home/runner/workspace/node_modules/metro/src/DeltaBundler/Worker.flow.js
+- /home/runner/workspace/node_modules/metro/src/DeltaBundler/Worker.js
+- /home/runner/workspace/node_modules/jest-worker/build/workers/processChild.js
+
+Make sure that all the Babel plugins and presets you are using
+are defined as dependencies or devDependencies in your package.json
+file. It's possible that the missing plugin is loaded by a preset
+you are using that forgot to add the plugin to its dependencies: you
+can workaround this problem by explicitly adding the missing package
+to your top-level package.json.
+
