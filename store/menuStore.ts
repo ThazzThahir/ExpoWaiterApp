@@ -27,7 +27,6 @@ const MOCK_CATEGORIES: Category[] = [
 
 // Mock data for menu items
 const MOCK_MENU_ITEMS: MenuItem[] = [
-    // Appetizers
     {
         id: 'item1',
         name: 'Bruschetta',
@@ -56,35 +55,6 @@ const MOCK_MENU_ITEMS: MenuItem[] = [
         available: true,
     },
     {
-        id: 'item19',
-        name: 'Buffalo Wings',
-        description: 'Spicy chicken wings served with blue cheese dip',
-        price: 11.99,
-        categoryId: 'cat1',
-        imageUrl: 'https://images.unsplash.com/photo-1608039755401-742074f0548d',
-        available: true,
-    },
-    {
-        id: 'item20',
-        name: 'Spinach Artichoke Dip',
-        description: 'Creamy dip served with tortilla chips',
-        price: 10.99,
-        categoryId: 'cat1',
-        imageUrl: 'https://images.unsplash.com/photo-1541529086526-db283c563270',
-        available: true,
-    },
-    {
-        id: 'item21',
-        name: 'Loaded Nachos',
-        description: 'Tortilla chips with cheese, jalapeños, sour cream',
-        price: 13.99,
-        categoryId: 'cat1',
-        imageUrl: 'https://images.unsplash.com/photo-1513456852971-30c0b8199d4d',
-        available: true,
-    },
-
-    // Main Courses
-    {
         id: 'item4',
         name: 'Grilled Salmon',
         description: 'Fresh salmon fillet grilled to perfection with lemon butter sauce',
@@ -111,35 +81,6 @@ const MOCK_MENU_ITEMS: MenuItem[] = [
         imageUrl: 'https://images.unsplash.com/photo-1632778149955-e80f8ceca2e8',
         available: true,
     },
-    {
-        id: 'item22',
-        name: 'BBQ Ribs',
-        description: 'Slow-cooked baby back ribs with house BBQ sauce',
-        price: 26.99,
-        categoryId: 'cat2',
-        imageUrl: 'https://images.unsplash.com/photo-1544025162-d76694265947',
-        available: true,
-    },
-    {
-        id: 'item23',
-        name: 'Lamb Chops',
-        description: 'Herb-crusted lamb chops with mint sauce',
-        price: 28.99,
-        categoryId: 'cat2',
-        imageUrl: 'https://images.unsplash.com/photo-1574653462307-5d85c3338dfd',
-        available: true,
-    },
-    {
-        id: 'item24',
-        name: 'Pan-Seared Duck',
-        description: 'Duck breast with cherry gastrique',
-        price: 29.99,
-        categoryId: 'cat2',
-        imageUrl: 'https://images.unsplash.com/photo-1546833999-b9f581a1996d',
-        available: true,
-    },
-
-    // Pasta
     {
         id: 'item7',
         name: 'Spaghetti Carbonara',
@@ -168,35 +109,6 @@ const MOCK_MENU_ITEMS: MenuItem[] = [
         available: true,
     },
     {
-        id: 'item25',
-        name: 'Lasagna Bolognese',
-        description: 'Traditional layered pasta with meat sauce and cheese',
-        price: 17.99,
-        categoryId: 'cat3',
-        imageUrl: 'https://images.unsplash.com/photo-1574894709920-11b28e7367e3',
-        available: true,
-    },
-    {
-        id: 'item26',
-        name: 'Linguine Seafood',
-        description: 'Fresh seafood medley in white wine sauce',
-        price: 22.99,
-        categoryId: 'cat3',
-        imageUrl: 'https://images.unsplash.com/photo-1621996346565-e3dbc353d2e5',
-        available: true,
-    },
-    {
-        id: 'item27',
-        name: 'Ravioli Spinach',
-        description: 'Spinach and ricotta ravioli in sage butter',
-        price: 16.99,
-        categoryId: 'cat3',
-        imageUrl: 'https://images.unsplash.com/photo-1572441713132-51c75654db73',
-        available: true,
-    },
-
-    // Pizza
-    {
         id: 'item10',
         name: 'Margherita Pizza',
         description: 'Classic pizza with tomato sauce, mozzarella, and fresh basil',
@@ -224,35 +136,6 @@ const MOCK_MENU_ITEMS: MenuItem[] = [
         available: true,
     },
     {
-        id: 'item28',
-        name: 'Meat Lovers Pizza',
-        description: 'Pepperoni, sausage, bacon, and ham',
-        price: 19.99,
-        categoryId: 'cat4',
-        imageUrl: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b',
-        available: true,
-    },
-    {
-        id: 'item29',
-        name: 'Hawaiian Pizza',
-        description: 'Ham, pineapple, and mozzarella cheese',
-        price: 17.99,
-        categoryId: 'cat4',
-        imageUrl: 'https://images.unsplash.com/photo-1594007654729-407eedc4be65',
-        available: true,
-    },
-    {
-        id: 'item30',
-        name: 'BBQ Chicken Pizza',
-        description: 'Grilled chicken with BBQ sauce and red onions',
-        price: 18.99,
-        categoryId: 'cat4',
-        imageUrl: 'https://images.unsplash.com/photo-1571407970349-bc81e7e96d47',
-        available: true,
-    },
-
-    // Salads
-    {
         id: 'item13',
         name: 'Caesar Salad',
         description: 'Romaine lettuce with Caesar dressing, croutons, and parmesan',
@@ -270,35 +153,6 @@ const MOCK_MENU_ITEMS: MenuItem[] = [
         imageUrl: 'https://images.unsplash.com/photo-1540420773420-3366772f4999',
         available: true,
     },
-    {
-        id: 'item31',
-        name: 'Cobb Salad',
-        description: 'Mixed greens with bacon, egg, chicken, and blue cheese',
-        price: 13.99,
-        categoryId: 'cat5',
-        imageUrl: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd',
-        available: true,
-    },
-    {
-        id: 'item32',
-        name: 'Caprese Salad',
-        description: 'Fresh mozzarella, tomatoes, and basil with balsamic',
-        price: 12.99,
-        categoryId: 'cat5',
-        imageUrl: 'https://images.unsplash.com/photo-1608897013039-887f21d8c804',
-        available: true,
-    },
-    {
-        id: 'item33',
-        name: 'Quinoa Power Bowl',
-        description: 'Quinoa, avocado, chickpeas, and tahini dressing',
-        price: 14.99,
-        categoryId: 'cat5',
-        imageUrl: 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136',
-        available: true,
-    },
-
-    // Desserts
     {
         id: 'item15',
         name: 'Tiramisu',
@@ -318,35 +172,6 @@ const MOCK_MENU_ITEMS: MenuItem[] = [
         available: true,
     },
     {
-        id: 'item34',
-        name: 'Crème Brûlée',
-        description: 'Rich vanilla custard with caramelized sugar crust',
-        price: 8.99,
-        categoryId: 'cat6',
-        imageUrl: 'https://images.unsplash.com/photo-1470324161839-ce2bb6fa6bc3',
-        available: true,
-    },
-    {
-        id: 'item35',
-        name: 'New York Cheesecake',
-        description: 'Classic cheesecake with berry compote',
-        price: 7.99,
-        categoryId: 'cat6',
-        imageUrl: 'https://images.unsplash.com/photo-1567206563064-6f60f40a2b57',
-        available: true,
-    },
-    {
-        id: 'item36',
-        name: 'Gelato Trio',
-        description: 'Three scoops of artisanal gelato',
-        price: 6.99,
-        categoryId: 'cat6',
-        imageUrl: 'https://images.unsplash.com/photo-1488900128323-21503983a07e',
-        available: true,
-    },
-
-    // Beverages
-    {
         id: 'item17',
         name: 'Espresso',
         description: 'Strong Italian coffee',
@@ -362,42 +187,6 @@ const MOCK_MENU_ITEMS: MenuItem[] = [
         price: 7.99,
         categoryId: 'cat7',
         imageUrl: 'https://images.unsplash.com/photo-1553361371-9b22f78e8b1d',
-        available: true,
-    },
-    {
-        id: 'item37',
-        name: 'Cappuccino',
-        description: 'Espresso with steamed milk and foam',
-        price: 4.99,
-        categoryId: 'cat7',
-        imageUrl: 'https://images.unsplash.com/photo-1572442388796-11668a67e53d',
-        available: true,
-    },
-    {
-        id: 'item38',
-        name: 'Fresh Orange Juice',
-        description: 'Freshly squeezed orange juice',
-        price: 4.99,
-        categoryId: 'cat7',
-        imageUrl: 'https://images.unsplash.com/photo-1613478223719-2ab802602423',
-        available: true,
-    },
-    {
-        id: 'item39',
-        name: 'Craft Beer',
-        description: 'Local craft beer on tap',
-        price: 6.99,
-        categoryId: 'cat7',
-        imageUrl: 'https://images.unsplash.com/photo-1535958636474-b021ee887b13',
-        available: true,
-    },
-    {
-        id: 'item40',
-        name: 'Sparkling Water',
-        description: 'San Pellegrino sparkling water',
-        price: 3.99,
-        categoryId: 'cat7',
-        imageUrl: 'https://images.unsplash.com/photo-1559827260-dc66d52bef19',
         available: true,
     },
 ];

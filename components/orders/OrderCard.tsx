@@ -1,16 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
-import { 
-    Clock, 
-    Users, 
-    ShoppingBag, 
-    DollarSign,
-    CheckCircle,
-    ChefHat,
-    Truck,
-    Edit3,
-    Printer
-} from 'lucide-react-native';
+import { Clock, Users, ShoppingBag, DollarSign, Edit, Printer, Check } from 'lucide-react-native';
 import { Order } from '@/types';
 import { colors } from '@/constants/colors';
 import { formatCurrency, formatDate } from '@/utils/validation';
@@ -19,16 +9,12 @@ interface OrderCardProps {
     order: Order;
     onPress: (orderId: string) => void;
     onStatusChange: (orderId: string, status: 'preparing' | 'serving' | 'completed') => void;
-    onModify?: (orderId: string) => void;
-    onPrint?: (orderId: string) => void;
 }
 
-export const OrderCard: React.FC<OrderCardProps> = ({ 
-    order, 
-    onPress, 
+export const OrderCard: React.FC<OrderCardProps> = ({
+    order,
+    onPress,
     onStatusChange,
-    onModify,
-    onPrint
 }) => {
     const getProgressPercentage = () => {
         switch (order.status) {
@@ -124,35 +110,27 @@ export const OrderCard: React.FC<OrderCardProps> = ({
                 </View>
             </View>
 
-                {/* Action Buttons */}
-                {order.status !== 'completed' && (
-                    <View style={styles.actionButtons}>
-                        {onModify && (
-                            <TouchableOpacity
-                                style={[styles.actionButton, styles.modifyButton]}
-                                onPress={(e) => {
-                                    e.stopPropagation();
-                                    onModify(order.id);
-                                }}
-                            >
-                                <Edit3 size={14} color="#3498db" />
-                                <Text style={styles.modifyButtonText}>Modify</Text>
-                            </TouchableOpacity>
-                        )}
+            <View style={styles.actions}>
+                <TouchableOpacity style={styles.actionButton}>
+                    <Edit size={18} color={colors.primary} />
+                    <Text style={styles.actionText}>Modify</Text>
+                </TouchableOpacity>
 
-                        {onPrint && (
-                            <TouchableOpacity
-                                style={[styles.actionButton, styles.printButton]}
-                                onPress={(e) => {
-                                    e.stopPropagation();
-                                    onPrint(order.id);
-                                }}
-                            >
-                                <Printer size={14} color="#27ae60" />
-                                <Text style={styles.printButtonText}>Print</Text>
-                            </TouchableOpacity>
-                        )}
-                    </View>
+                <TouchableOpacity style={styles.actionButton}>
+                    <Printer size={18} color={colors.primary} />
+                    <Text style={styles.actionText}>Print</Text>
+                </TouchableOpacity>
+
+                {order.status !== 'completed' && (
+                    <TouchableOpacity
+                        style={[styles.actionButton, styles.completeButton]}
+                        onPress={handleStatusChange}
+                    >
+                        <Check size={18} color="#fff" />
+                        <Text style={styles.completeText}>
+                            {order.status === 'preparing' ? 'Serve' : 'Complete'}
+                        </Text>
+                    </TouchableOpacity>
                 )}
             </View>
         </TouchableOpacity>
@@ -277,55 +255,5 @@ const styles = StyleSheet.create({
         marginLeft: 4,
         fontSize: 14,
         color: '#fff',
-    },
-    statusButton: {
-        paddingHorizontal: 12,
-        paddingVertical: 6,
-        borderRadius: 12,
-        minWidth: 80,
-        alignItems: 'center',
-    },
-    statusButtonText: {
-        fontSize: 12,
-        fontWeight: 'bold',
-        color: '#fff',
-    },
-    actionButtons: {
-        flexDirection: 'row',
-        marginTop: 12,
-        paddingTop: 12,
-        borderTopWidth: 1,
-        borderTopColor: colors.border,
-        gap: 8,
-    },
-    actionButton: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        paddingHorizontal: 12,
-        paddingVertical: 8,
-        borderRadius: 8,
-        flex: 1,
-        justifyContent: 'center',
-        gap: 6,
-    },
-    modifyButton: {
-        backgroundColor: '#f8f9fa',
-        borderWidth: 1,
-        borderColor: '#3498db',
-    },
-    printButton: {
-        backgroundColor: '#f8f9fa',
-        borderWidth: 1,
-        borderColor: '#27ae60',
-    },
-    modifyButtonText: {
-        fontSize: 12,
-        fontWeight: '500',
-        color: '#3498db',
-    },
-    printButtonText: {
-        fontSize: 12,
-        fontWeight: '500',
-        color: '#27ae60',
     },
 });
