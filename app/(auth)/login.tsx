@@ -24,7 +24,7 @@ export default function LoginScreen() {
         Alert.alert(
             "Demo Accounts",
             "You can use these accounts to login:\n\n" +
-                "Username: admin\nPassword: 123456\n\n" +
+                "Username: admin\nPassword: 12345\n\n" +
                 "Username: staff\nPassword: password",
             [{ text: "OK" }],
         );
