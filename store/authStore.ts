@@ -24,7 +24,7 @@ const INITIAL_USERS: AuthUser[] = [
     {
         id: "1",
         username: "admin",
-        password: "12345",
+        password: "12345", // Ensure this is set correctly
         name: "Admin User",
         role: "admin" as const,
     },
