@@ -1,42 +1,49 @@
 {
     "expo": {
-        "name": "Restaurant Management Flutter App",
-        "slug": "restaurant-management-flutter-app",
+        "name": "Restaurant Management App",
+        "slug": "restaurant-management-app",
         "version": "1.0.0",
         "orientation": "portrait",
         "icon": "./assets/images/icon.png",
         "scheme": "myapp",
         "userInterfaceStyle": "automatic",
         "newArchEnabled": true,
+        "platforms": ["ios", "android", "web"],
         "splash": {
             "image": "./assets/images/splash-icon.png",
             "resizeMode": "contain",
             "backgroundColor": "#ffffff"
         },
+        "assetBundlePatterns": [
+            "**/*"
+        ],
         "ios": {
             "supportsTablet": true,
-            "bundleIdentifier": "app.rork.restaurant-management-flutter-app"
+            "bundleIdentifier": "app.rork.restaurantmanagementapp",
+            "buildNumber": "1"
         },
         "android": {
             "adaptiveIcon": {
                 "foregroundImage": "./assets/images/adaptive-icon.png",
                 "backgroundColor": "#ffffff"
             },
-            "package": "app.rork.restaurant-management-flutter-app"
+            "package": "app.rork.restaurantmanagementapp",
+            "versionCode": 1
         },
         "web": {
-            "favicon": "./assets/images/favicon.png"
+            "favicon": "./assets/images/favicon.png",
+            "bundler": "metro"
         },
         "plugins": [
-            [
-                "expo-router",
-                {
-                    "origin": "https://rork.com/"
-                }
-            ]
+            "expo-router"
         ],
         "experiments": {
             "typedRoutes": true
+        },
+        "extra": {
+            "router": {
+                "origin": false
+            }
         }
     }
 }

@@ -20,7 +20,7 @@ localPort = 8083
 externalPort = 3001
 
 [workflows]
-runButton = "Start Expo"
+runButton = "Start Expo Mobile"
 
 [[workflows.workflow]]
 name = "Start Expo"
@@ -30,3 +30,21 @@ mode = "sequential"
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "bun run expo start --host 0.0.0.0 --port 5000 --web"
+
+[[workflows.workflow]]
+name = "Start Expo Mobile"
+author = 44238966
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "bun run expo start --tunnel"
+
+[[workflows.workflow]]
+name = "Start Expo LAN"
+author = 44238966
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "bun run expo start --lan"
