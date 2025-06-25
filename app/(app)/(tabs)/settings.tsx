@@ -1,3 +1,4 @@
+
 import React from 'react';
 import {
     StyleSheet,
@@ -13,18 +14,19 @@ import {
     User,
     Bell,
     Moon,
+    Sun,
     HelpCircle,
     Info,
     LogOut,
     ChevronRight,
 } from 'lucide-react-native';
 import { useAuthStore } from '@/store/authStore';
-import { colors } from '@/constants/colors';
+import { useAppTheme } from '@/components/common/AppThemeProvider';
 
 export default function SettingsScreen() {
     const router = useRouter();
     const { user, logout } = useAuthStore();
-    const [darkMode, setDarkMode] = React.useState(false);
+    const { colors, isDark, toggleTheme } = useAppTheme();
     const [notifications, setNotifications] = React.useState(true);
 
     const handleLogout = () => {
@@ -48,201 +50,269 @@ export default function SettingsScreen() {
         );
     };
 
-    const renderSettingItem = (
-        icon: React.ReactNode,
-        title: string,
-        rightElement?: React.ReactNode,
-        onPress?: () => void
-    ) => {
-        return (
-            <TouchableOpacity
-                style={styles.settingItem}
-                onPress={onPress}
-                disabled={!onPress}
-            >
-                <View style={styles.settingIconContainer}>
+    const styles = createStyles(colors);
+
+    const SettingItem = ({ 
+        icon, 
+        title, 
+        subtitle, 
+        onPress, 
+        rightComponent,
+        isLast = false 
+    }: {
+        icon: React.ReactNode;
+        title: string;
+        subtitle?: string;
+        onPress?: () => void;
+        rightComponent?: React.ReactNode;
+        isLast?: boolean;
+    }) => (
+        <TouchableOpacity 
+            style={[styles.settingItem, isLast && styles.lastItem]} 
+            onPress={onPress}
+            disabled={!onPress}
+        >
+            <View style={styles.settingLeft}>
+                <View style={styles.iconContainer}>
                     {icon}
                 </View>
-                <Text style={styles.settingTitle}>{title}</Text>
-                <View style={styles.settingRight}>
-                    {rightElement || <ChevronRight size={20} color={colors.textLight} />}
+                <View style={styles.textContainer}>
+                    <Text style={styles.settingTitle}>{title}</Text>
+                    {subtitle && <Text style={styles.settingSubtitle}>{subtitle}</Text>}
                 </View>
-            </TouchableOpacity>
-        );
-    };
+            </View>
+            <View style={styles.settingRight}>
+                {rightComponent || <ChevronRight size={20} color={colors.textLight} />}
+            </View>
+        </TouchableOpacity>
+    );
 
     return (
-        <ScrollView style={styles.container}>
-            <View style={styles.header}>
-                <Text style={styles.title}>Settings</Text>
-            </View>
-
-            <View style={styles.profileSection}>
-                <View style={styles.profileIconContainer}>
-                    <User size={32} color="#fff" />
+        <View style={styles.container}>
+            <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
+                {/* Profile Section */}
+                <View style={styles.section}>
+                    <View style={styles.profileCard}>
+                        <View style={styles.profileInfo}>
+                            <View style={styles.avatar}>
+                                <User size={32} color={colors.primary} />
+                            </View>
+                            <View style={styles.profileText}>
+                                <Text style={styles.profileName}>{user?.name || 'User'}</Text>
+                                <Text style={styles.profileRole}>{user?.role || 'staff'}</Text>
+                            </View>
+                        </View>
+                        <TouchableOpacity style={styles.editButton}>
+                            <Text style={styles.editButtonText}>Edit</Text>
+                        </TouchableOpacity>
+                    </View>
                 </View>
-                <View style={styles.profileInfo}>
-                    <Text style={styles.profileName}>{user?.name || "User"}</Text>
-                    <Text style={styles.profileRole}>{user?.role || "Staff"}</Text>
+
+                {/* Preferences Section */}
+                <View style={styles.section}>
+                    <Text style={styles.sectionTitle}>Preferences</Text>
+                    <View style={styles.settingsCard}>
+                        <SettingItem
+                            icon={<Bell size={20} color={colors.textLight} />}
+                            title="Notifications"
+                            subtitle="Receive order updates"
+                            rightComponent={
+                                <Switch
+                                    value={notifications}
+                                    onValueChange={setNotifications}
+                                    trackColor={{ false: colors.border, true: colors.primary }}
+                                    thumbColor={notifications ? '#fff' : colors.textLight}
+                                />
+                            }
+                        />
+                        <SettingItem
+                            icon={isDark ? <Sun size={20} color={colors.textLight} /> : <Moon size={20} color={colors.textLight} />}
+                            title="Dark Mode"
+                            subtitle={`Currently ${isDark ? 'enabled' : 'disabled'}`}
+                            onPress={toggleTheme}
+                            rightComponent={
+                                <Switch
+                                    value={isDark}
+                                    onValueChange={toggleTheme}
+                                    trackColor={{ false: colors.border, true: colors.primary }}
+                                    thumbColor={isDark ? '#fff' : colors.textLight}
+                                />
+                            }
+                            isLast
+                        />
+                    </View>
                 </View>
-            </View>
 
-            <View style={styles.section}>
-                <Text style={styles.sectionTitle}>Preferences</Text>
+                {/* Support Section */}
+                <View style={styles.section}>
+                    <Text style={styles.sectionTitle}>Support</Text>
+                    <View style={styles.settingsCard}>
+                        <SettingItem
+                            icon={<HelpCircle size={20} color={colors.textLight} />}
+                            title="Help Center"
+                            subtitle="Get help and support"
+                            onPress={() => {}}
+                        />
+                        <SettingItem
+                            icon={<Info size={20} color={colors.textLight} />}
+                            title="About"
+                            subtitle="Version 1.0.0"
+                            onPress={() => {}}
+                            isLast
+                        />
+                    </View>
+                </View>
 
-                {renderSettingItem(
-                    <Bell size={22} color={colors.primary} />,
-                    "Notifications",
-                    <Switch
-                        value={notifications}
-                        onValueChange={setNotifications}
-                        trackColor={{ false: colors.border, true: colors.primaryLight }}
-                        thumbColor={notifications ? colors.primary : "#f4f3f4"}
-                    />
-                )}
-
-                {renderSettingItem(
-                    <Moon size={22} color={colors.primary} />,
-                    "Dark Mode",
-                    <Switch
-                        value={darkMode}
-                        onValueChange={setDarkMode}
-                        trackColor={{ false: colors.border, true: colors.primaryLight }}
-                        thumbColor={darkMode ? colors.primary : "#f4f3f4"}
-                    />
-                )}
-            </View>
-
-            <View style={styles.section}>
-                <Text style={styles.sectionTitle}>Support</Text>
-
-                {renderSettingItem(
-                    <HelpCircle size={22} color={colors.primary} />,
-                    "Help & Support",
-                    undefined,
-                    () => console.log("Help & Support pressed")
-                )}
-
-                {renderSettingItem(
-                    <Info size={22} color={colors.primary} />,
-                    "About",
-                    undefined,
-                    () => console.log("About pressed")
-                )}
-            </View>
-
-            <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-                <LogOut size={20} color="#e74c3c" />
-                <Text style={styles.logoutText}>Logout</Text>
-            </TouchableOpacity>
-
-            <Text style={styles.versionText}>Version 1.0.0</Text>
-        </ScrollView>
+                {/* Logout Section */}
+                <View style={styles.section}>
+                    <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+                        <LogOut size={20} color={colors.error} />
+                        <Text style={styles.logoutText}>Logout</Text>
+                    </TouchableOpacity>
+                </View>
+            </ScrollView>
+        </View>
     );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: any) => StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: colors.background,
     },
-    header: {
+    scrollView: {
+        flex: 1,
+    },
+    section: {
+        marginBottom: 24,
         paddingHorizontal: 16,
-        paddingVertical: 12,
-        borderBottomWidth: 1,
-        borderBottomColor: colors.border,
-        backgroundColor: colors.card,
     },
-    title: {
-        fontSize: 20,
-        fontWeight: 'bold',
+    sectionTitle: {
+        fontSize: 16,
+        fontWeight: '600',
         color: colors.text,
+        marginBottom: 12,
+        marginLeft: 4,
     },
-    profileSection: {
+    profileCard: {
+        backgroundColor: colors.card,
+        borderRadius: 12,
+        padding: 16,
         flexDirection: 'row',
         alignItems: 'center',
-        padding: 16,
-        backgroundColor: colors.card,
-        marginBottom: 16,
+        justifyContent: 'space-between',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.1,
+        shadowRadius: 2,
+        elevation: 2,
     },
-    profileIconContainer: {
-        width: 60,
-        height: 60,
-        borderRadius: 30,
-        backgroundColor: colors.primary,
+    profileInfo: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    avatar: {
+        width: 56,
+        height: 56,
+        borderRadius: 28,
+        backgroundColor: colors.background,
         justifyContent: 'center',
         alignItems: 'center',
         marginRight: 16,
     },
-    profileInfo: {
+    profileText: {
         flex: 1,
     },
     profileName: {
         fontSize: 18,
-        fontWeight: 'bold',
+        fontWeight: '600',
         color: colors.text,
         marginBottom: 4,
     },
     profileRole: {
         fontSize: 14,
         color: colors.textLight,
+        textTransform: 'capitalize',
     },
-    section: {
-        backgroundColor: colors.card,
-        marginBottom: 16,
-        paddingTop: 8,
-        paddingBottom: 8,
+    editButton: {
+        paddingHorizontal: 16,
+        paddingVertical: 8,
+        borderRadius: 8,
+        borderWidth: 1,
+        borderColor: colors.primary,
     },
-    sectionTitle: {
+    editButtonText: {
+        color: colors.primary,
         fontSize: 14,
-        fontWeight: '500',
-        color: colors.textLight,
-        marginLeft: 16,
-        marginBottom: 8,
-        marginTop: 8,
+        fontWeight: '600',
+    },
+    settingsCard: {
+        backgroundColor: colors.card,
+        borderRadius: 12,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.1,
+        shadowRadius: 2,
+        elevation: 2,
     },
     settingItem: {
         flexDirection: 'row',
         alignItems: 'center',
-        paddingVertical: 12,
-        paddingHorizontal: 16,
+        justifyContent: 'space-between',
+        padding: 16,
+        borderBottomWidth: 1,
+        borderBottomColor: colors.border,
     },
-    settingIconContainer: {
-        width: 36,
-        height: 36,
-        borderRadius: 18,
-        backgroundColor: colors.border,
+    lastItem: {
+        borderBottomWidth: 0,
+    },
+    settingLeft: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        flex: 1,
+    },
+    iconContainer: {
+        width: 40,
+        height: 40,
+        borderRadius: 20,
+        backgroundColor: colors.background,
         justifyContent: 'center',
         alignItems: 'center',
         marginRight: 12,
     },
-    settingTitle: {
+    textContainer: {
         flex: 1,
+    },
+    settingTitle: {
         fontSize: 16,
+        fontWeight: '500',
         color: colors.text,
+        marginBottom: 2,
+    },
+    settingSubtitle: {
+        fontSize: 14,
+        color: colors.textLight,
     },
     settingRight: {
-        flexDirection: 'row',
-        alignItems: 'center',
+        marginLeft: 8,
     },
     logoutButton: {
+        backgroundColor: colors.card,
+        borderRadius: 12,
+        padding: 16,
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: colors.card,
-        paddingVertical: 16,
-        marginBottom: 16,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.1,
+        shadowRadius: 2,
+        elevation: 2,
     },
     logoutText: {
-        color: '#e74c3c',
         fontSize: 16,
-        fontWeight: '500',
+        fontWeight: '600',
+        color: colors.error,
         marginLeft: 8,
-    },
-    versionText: {
-        textAlign: 'center',
-        color: colors.textLight,
-        fontSize: 12,
-        marginBottom: 20,
     },
 });

@@ -1,3 +1,4 @@
+
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -24,14 +25,14 @@ const INITIAL_USERS: AuthUser[] = [
     {
         id: "1",
         username: "admin",
-        password: "12345", // Ensure this is set correctly
+        password: "admin123", // Updated to meet 5 character minimum
         name: "Admin User",
         role: "admin" as const,
     },
     {
         id: "2",
         username: "staff",
-        password: "password",
+        password: "staff123", // Updated to meet 5 character minimum
         name: "Staff User",
         role: "staff" as const,
     },

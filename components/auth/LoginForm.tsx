@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import {
     StyleSheet,
@@ -41,7 +42,6 @@ export const LoginForm = () => {
     };
 
     const handleSubmit = async () => {
-        // Validate inputs
         const usernameValidationError = validateUsername(username);
         const passwordValidationError = validatePassword(password);
 
@@ -52,6 +52,8 @@ export const LoginForm = () => {
             await login(username, password);
         }
     };
+
+    const styles = createStyles(colors);
 
     return (
         <KeyboardAvoidingView
@@ -115,7 +117,7 @@ export const LoginForm = () => {
     );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (colors: any) => StyleSheet.create({
     container: {
         width: '100%',
     },
@@ -126,7 +128,7 @@ const styles = StyleSheet.create({
     inputContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: '#fff',
+        backgroundColor: colors.card,
         borderRadius: 8,
         marginBottom: 12,
         paddingHorizontal: 12,
@@ -136,6 +138,8 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.1,
         shadowRadius: 2,
         elevation: 2,
+        borderWidth: 1,
+        borderColor: colors.border,
     },
     inputIcon: {
         marginRight: 10,
@@ -171,7 +175,7 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
     errorText: {
-        color: '#e74c3c',
+        color: colors.error,
         fontSize: 14,
         marginBottom: 10,
         marginTop: -5,

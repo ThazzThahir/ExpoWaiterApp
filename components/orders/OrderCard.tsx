@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import { Clock, Users, ShoppingBag, DollarSign, Edit, Printer, Check } from 'lucide-react-native';
@@ -17,6 +18,7 @@ export const OrderCard: React.FC<OrderCardProps> = ({
     onStatusChange,
 }) => {
     const { colors } = useAppTheme();
+    
     const getProgressPercentage = () => {
         switch (order.status) {
             case 'preparing':
@@ -46,6 +48,8 @@ export const OrderCard: React.FC<OrderCardProps> = ({
             onStatusChange(order.id, getNextStatus());
         }
     };
+
+    const styles = createStyles(colors);
 
     return (
         <TouchableOpacity
@@ -138,7 +142,7 @@ export const OrderCard: React.FC<OrderCardProps> = ({
     );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (colors: any) => StyleSheet.create({
     container: {
         backgroundColor: colors.card,
         borderRadius: 12,
@@ -242,6 +246,7 @@ const styles = StyleSheet.create({
         borderRadius: 6,
         borderWidth: 1,
         borderColor: colors.border,
+        backgroundColor: colors.card,
     },
     actionText: {
         marginLeft: 4,

@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import {
     StyleSheet,
@@ -30,6 +31,8 @@ export default function LoginScreen() {
             [{ text: "OK" }],
         );
     };
+
+    const styles = createStyles(colors);
 
     return (
         <View style={styles.container}>
@@ -85,7 +88,7 @@ export default function LoginScreen() {
     );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: any) => StyleSheet.create({
     container: {
         flex: 1,
     },
@@ -115,7 +118,7 @@ const styles = StyleSheet.create({
     },
     formContainer: {
         flex: 1,
-        backgroundColor: "#fff",
+        backgroundColor: colors.card,
         borderTopLeftRadius: 30,
         borderTopRightRadius: 30,
         paddingTop: 30,
