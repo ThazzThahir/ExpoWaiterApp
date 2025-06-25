@@ -3,7 +3,7 @@
     "main": "expo-router/entry",
     "version": "1.0.0",
     "scripts": {
-        "expo": "expo start"
+        "expo": "expo start",
         "start": "bun run expo start",
         "android": "bun run expo start --android",
         "ios": "bun run expo start --ios",
@@ -31,7 +31,7 @@
         "expo-web-browser": "~14.1.6",
         "lucide-react-native": "^0.475.0",
         "nativewind": "^4.1.23",
-        "react": "18.0.0",
+        "react": "18.2.0",
         "react-dom": "19.0.0",
         "react-native": "0.79.3",
         "react-native-gesture-handler": "~2.24.0",
