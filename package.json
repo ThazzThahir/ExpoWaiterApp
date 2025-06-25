@@ -2,6 +2,7 @@
     "name": "expo-app",
     "main": "expo-router/entry",
     "version": "1.0.0",
+    "type": "module",
     "scripts": {
         "start": "expo start",
         "android": "expo start --android",
@@ -31,7 +32,7 @@
         "expo-web-browser": "~14.1.6",
         "lucide-react-native": "^0.475.0",
         "nativewind": "^4.1.23",
-        "react": "19.0.0",
+        "react": "18.0.0",
         "react-dom": "19.0.0",
         "react-native": "0.79.3",
         "react-native-gesture-handler": "~2.24.0",
@@ -42,7 +43,10 @@
         "zustand": "^5.0.5"
     },
     "devDependencies": {
-        "@babel/core": "^7.25.2",
+        "@babel/core": "^7.27.4",
+        "@babel/plugin-transform-runtime": "^7.27.4",
+        "@babel/preset-env": "^7.27.2",
+        "@babel/preset-react": "^7.27.1",
         "@expo/ngrok": "^4.1.0",
         "@types/react": "~19.0.10",
         "typescript": "~5.8.3"

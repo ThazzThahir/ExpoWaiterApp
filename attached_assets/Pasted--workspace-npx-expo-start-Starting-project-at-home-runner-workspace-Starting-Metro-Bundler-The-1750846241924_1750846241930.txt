@@ -1,0 +1,56 @@
+~/workspace$ npx expo start
+Starting project at /home/runner/workspace
+Starting Metro Bundler
+The following packages should be updated for best compatibility with the installed expo version:
+  expo@53.0.4 - expected version: 53.0.12
+  expo-blur@14.1.4 - expected version: ~14.1.5
+  expo-constants@17.1.4 - expected version: ~17.1.6
+  expo-font@13.3.0 - expected version: ~13.3.1
+  expo-linear-gradient@14.1.4 - expected version: ~14.1.5
+  expo-linking@7.1.4 - expected version: ~7.1.5
+  expo-location@18.1.4 - expected version: ~18.1.5
+  expo-splash-screen@0.30.7 - expected version: ~0.30.9
+  expo-symbols@0.4.4 - expected version: ~0.4.5
+  expo-system-ui@5.0.6 - expected version: ~5.0.9
+  expo-web-browser@14.1.6 - expected version: ~14.2.0
+  react-native@0.79.3 - expected version: 0.79.4
+Your project may not work correctly until you install the expected versions of the packages.
+▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄
+█ ▄▄▄▄▄ █   █▄ ▀▄██ ▄▄▄▄▄ █
+█ █   █ █ ▀▄ █▀▄█▀█ █   █ █
+█ █▄▄▄█ █▀██▀▀▄█▄██ █▄▄▄█ █
+█▄▄▄▄▄▄▄█▄▀▄█ █ ▀ █▄▄▄▄▄▄▄█
+█ ▄██▄▄▄▀█▀▀▄▀▀▄ ▄██ ▀▄▄ ▄█
+█ ▄  ▄▀▄▀ █▀ ▄▄█▄ ▀ █▄  ▀██
+█▀▄█ ▀▄▄█ █▄█▄█▄▀▄▀▄▀▀▄ ▀██
+███ ▄▀█▄ ▀▄▀█▀▄█ ▀▄▀ ▄ ▀███
+█▄▄██▄▄▄▄▀█ ▄ █▄▀ ▄▄▄ ▀ ▄▄█
+█ ▄▄▄▄▄ █▀▄█ ▄██▀ █▄█ ▀▀███
+█ █   █ █▄██▀▀▀▄█ ▄ ▄▄▀ ▀▀█
+█ █▄▄▄█ █▀█▀ ███▀█▀▄▀█▀▀ ██
+█▄▄▄▄▄▄▄█▄██▄██▄██▄▄▄▄▄▄▄▄█
+
+› Metro waiting on exp://172.31.128.172:8081
+› Scan the QR code above with Expo Go (Android) or the Camera app (iOS)
+
+› Web is waiting on http://localhost:8081
+
+› Using Expo Go
+› Press s │ switch to development build
+
+› Press a │ open Android
+› Press w │ open web
+
+› Press j │ open debugger
+› Press r │ reload app
+› Press m │ toggle menu
+› shift+m │ more tools
+› Press o │ open project code in your editor
+
+› Press ? │ show all commands
+
+Logs for your project will appear below. Press Ctrl+C to exit.
+Web Bundled 3137ms node_modules/expo-router/entry.js (2381 modules)
+Web Bundled 167ms node_modules/expo-router/entry.js (1 module)
+Web Bundled 73ms node_modules/expo-router/entry.js (1 module)
+› Stopped server
