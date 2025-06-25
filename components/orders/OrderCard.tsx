@@ -1,9 +1,8 @@
-
 import React from 'react';
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import { Clock, Users, ShoppingBag, DollarSign, Edit, Printer, Check } from 'lucide-react-native';
 import { Order } from '@/types';
-import { useAppTheme } from '@/components/common/AppThemeProvider';
+import { colors } from '@/constants/colors';
 import { formatCurrency, formatDate } from '@/utils/validation';
 
 interface OrderCardProps {
@@ -17,8 +16,6 @@ export const OrderCard: React.FC<OrderCardProps> = ({
     onPress,
     onStatusChange,
 }) => {
-    const { colors } = useAppTheme();
-    
     const getProgressPercentage = () => {
         switch (order.status) {
             case 'preparing':
@@ -48,8 +45,6 @@ export const OrderCard: React.FC<OrderCardProps> = ({
             onStatusChange(order.id, getNextStatus());
         }
     };
-
-    const styles = createStyles(colors);
 
     return (
         <TouchableOpacity
@@ -142,7 +137,7 @@ export const OrderCard: React.FC<OrderCardProps> = ({
     );
 };
 
-const createStyles = (colors: any) => StyleSheet.create({
+const styles = StyleSheet.create({
     container: {
         backgroundColor: colors.card,
         borderRadius: 12,
@@ -246,7 +241,6 @@ const createStyles = (colors: any) => StyleSheet.create({
         borderRadius: 6,
         borderWidth: 1,
         borderColor: colors.border,
-        backgroundColor: colors.card,
     },
     actionText: {
         marginLeft: 4,

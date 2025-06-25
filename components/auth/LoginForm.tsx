@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import {
     StyleSheet,
@@ -13,11 +12,10 @@ import {
 import { User, Lock, Eye, EyeOff } from 'lucide-react-native';
 import { useAuthStore } from '@/store/authStore';
 import { validateUsername, validatePassword } from '@/utils/validation';
-import { useAppTheme } from '@/components/common/AppThemeProvider';
+import { colors } from '@/constants/colors';
 
 export const LoginForm = () => {
     const { login, isLoading, error, clearError } = useAuthStore();
-    const { colors } = useAppTheme();
 
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
@@ -42,6 +40,7 @@ export const LoginForm = () => {
     };
 
     const handleSubmit = async () => {
+        // Validate inputs
         const usernameValidationError = validateUsername(username);
         const passwordValidationError = validatePassword(password);
 
@@ -52,8 +51,6 @@ export const LoginForm = () => {
             await login(username, password);
         }
     };
-
-    const styles = createStyles(colors);
 
     return (
         <KeyboardAvoidingView
@@ -117,7 +114,7 @@ export const LoginForm = () => {
     );
 };
 
-const createStyles = (colors: any) => StyleSheet.create({
+const styles = StyleSheet.create({
     container: {
         width: '100%',
     },
@@ -128,7 +125,7 @@ const createStyles = (colors: any) => StyleSheet.create({
     inputContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: colors.card,
+        backgroundColor: '#fff',
         borderRadius: 8,
         marginBottom: 12,
         paddingHorizontal: 12,
@@ -138,8 +135,6 @@ const createStyles = (colors: any) => StyleSheet.create({
         shadowOpacity: 0.1,
         shadowRadius: 2,
         elevation: 2,
-        borderWidth: 1,
-        borderColor: colors.border,
     },
     inputIcon: {
         marginRight: 10,
@@ -175,7 +170,7 @@ const createStyles = (colors: any) => StyleSheet.create({
         fontWeight: 'bold',
     },
     errorText: {
-        color: colors.error,
+        color: '#e74c3c',
         fontSize: 14,
         marginBottom: 10,
         marginTop: -5,

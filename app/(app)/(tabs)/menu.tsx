@@ -1,155 +1,390 @@
-import React from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import {
     StyleSheet,
     View,
     Text,
-    ScrollView,
+    FlatList,
+    TextInput,
     TouchableOpacity,
+    ActivityIndicator,
+    RefreshControl,
+    Animated,
+    Platform,
 } from 'react-native';
 import { useRouter } from 'expo-router';
-import { Search, Filter, Grid, List } from 'lucide-react-native';
-import { useAppTheme } from '@/components/common/AppThemeProvider';
+import { Search, Filter, ShoppingCart } from 'lucide-react-native';
+import * as Haptics from 'expo-haptics';
+import { colors } from '@/constants/colors';
+import { useMenuStore } from '@/store/menuStore';
+import { useCartStore } from '@/store/cartStore';
+import { CategoryTabs } from '@/components/menu/CategoryTabs';
+import { MenuItemCard } from '@/components/menu/MenuItemCard';
+import { CartSummary } from '@/components/menu/CartSummary';
+import { MenuItem } from '@/types/menu';
 
 export default function MenuScreen() {
     const router = useRouter();
-    const { colors } = useAppTheme();
-    const [viewMode, setViewMode] = React.useState<'grid' | 'list'>('grid');
+    const {
+        menuItems,
+        categories,
+        isLoading,
+        fetchMenu,
+        getMenuItemsByCategory,
+        searchMenuItems,
+    } = useMenuStore();
 
-    const styles = createStyles(colors);
+    const { cart, getItemCount, addToCart } = useCartStore();
 
-    const categories = [
-        { id: '1', name: 'Appetizers', count: 12 },
-        { id: '2', name: 'Main Course', count: 18 },
-        { id: '3', name: 'Desserts', count: 8 },
-        { id: '4', name: 'Beverages', count: 15 },
-    ];
+    const [refreshing, setRefreshing] = useState(false);
+    const [selectedCategoryId, setSelectedCategoryId] = useState('');
+    const [searchQuery, setSearchQuery] = useState('');
+    const [isSearching, setIsSearching] = useState(false);
+
+    // Animation for category changes
+    const fadeAnim = useRef(new Animated.Value(1)).current;
+    const scaleAnim = useRef(new Animated.Value(1)).current;
+
+    // Animation for cart summary
+    const cartSlideAnim = useRef(new Animated.Value(100)).current;
+    const cartOpacityAnim = useRef(new Animated.Value(0)).current;
+
+    useEffect(() => {
+        fetchMenu().then(() => {
+            // Set the first category as selected once data is loaded
+            if (categories.length > 0 && !selectedCategoryId) {
+                const sortedCategories = [...categories].sort((a, b) => a.order - b.order);
+                setSelectedCategoryId(sortedCategories[0].id);
+            }
+        });
+    }, []);
+
+    // Animate category changes
+    useEffect(() => {
+        if (selectedCategoryId) {
+            // Fade out
+            Animated.sequence([
+                Animated.parallel([
+                    Animated.timing(fadeAnim, {
+                        toValue: 0.5,
+                        duration: 150,
+                        useNativeDriver: true,
+                    }),
+                    Animated.timing(scaleAnim, {
+                        toValue: 0.95,
+                        duration: 150,
+                        useNativeDriver: true,
+                    })
+                ]),
+                // Fade in
+                Animated.parallel([
+                    Animated.timing(fadeAnim, {
+                        toValue: 1,
+                        duration: 300,
+                        useNativeDriver: true,
+                    }),
+                    Animated.timing(scaleAnim, {
+                        toValue: 1,
+                        duration: 300,
+                        useNativeDriver: true,
+                    })
+                ])
+            ]).start();
+        }
+    }, [selectedCategoryId]);
+
+    // Animate cart summary when cart changes
+    useEffect(() => {
+        if (getItemCount() > 0) {
+            Animated.parallel([
+                Animated.timing(cartSlideAnim, {
+                    toValue: 0,
+                    duration: 300,
+                    useNativeDriver: true,
+                }),
+                Animated.timing(cartOpacityAnim, {
+                    toValue: 1,
+                    duration: 300,
+                    useNativeDriver: true,
+                })
+            ]).start();
+        } else {
+            Animated.parallel([
+                Animated.timing(cartSlideAnim, {
+                    toValue: 100,
+                    duration: 200,
+                    useNativeDriver: true,
+                }),
+                Animated.timing(cartOpacityAnim, {
+                    toValue: 0,
+                    duration: 200,
+                    useNativeDriver: true,
+                })
+            ]).start();
+        }
+    }, [cart.items.length]);
+
+    const handleRefresh = async () => {
+        setRefreshing(true);
+        await fetchMenu();
+        setRefreshing(false);
+    };
+
+    const handleCategorySelect = (categoryId: string) => {
+        if (Platform.OS !== 'web') {
+            Haptics.selectionAsync();
+        }
+        setSelectedCategoryId(categoryId);
+        setSearchQuery('');
+        setIsSearching(false);
+    };
+
+    const handleSearch = (text: string) => {
+        setSearchQuery(text);
+        setIsSearching(text.length > 0);
+    };
+
+    const handleItemPress = (item: MenuItem) => {
+        router.push(`/menu/${item.id}`);
+    };
+
+    const handleAddToCart = (item: MenuItem) => {
+        // Quick add to cart with default options
+        if (Platform.OS !== 'web') {
+            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+        }
+
+        // Check if item has required modifiers
+        const modifierGroups = useMenuStore.getState().getModifierGroupsForItem(item.id);
+        const hasRequiredModifiers = modifierGroups.some(group => group.required);
+
+        if (hasRequiredModifiers) {
+            // If it has required modifiers, navigate to detail screen
+            router.push(`/menu/${item.id}`);
+        } else {
+            // Otherwise, add directly to cart with default quantity of 1
+            addToCart(item, 1, [], '');
+
+            // Show animation feedback
+            Animated.sequence([
+                Animated.timing(scaleAnim, {
+                    toValue: 0.95,
+                    duration: 100,
+                    useNativeDriver: true,
+                }),
+                Animated.timing(scaleAnim, {
+                    toValue: 1,
+                    duration: 100,
+                    useNativeDriver: true,
+                })
+            ]).start();
+        }
+    };
+
+    const handleViewCart = () => {
+        router.push('/cart');
+    };
+
+    // Filter items based on search or selected category
+    const displayedItems = isSearching
+        ? searchMenuItems(searchQuery)
+        : getMenuItemsByCategory(selectedCategoryId);
 
     return (
         <View style={styles.container}>
-            {/* Header */}
             <View style={styles.header}>
-                <Text style={styles.title}>Menu</Text>
-                <View style={styles.headerActions}>
-                    <TouchableOpacity style={styles.actionButton}>
-                        <Search size={20} color={colors.textLight} />
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.actionButton}>
-                        <Filter size={20} color={colors.textLight} />
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                        style={styles.actionButton}
-                        onPress={() => setViewMode(viewMode === 'grid' ? 'list' : 'grid')}
-                    >
-                        {viewMode === 'grid' ? (
-                            <List size={20} color={colors.textLight} />
-                        ) : (
-                            <Grid size={20} color={colors.textLight} />
-                        )}
-                    </TouchableOpacity>
+                <View style={styles.searchContainer}>
+                    <Search size={20} color={colors.textLight} style={styles.searchIcon} />
+                    <TextInput
+                        style={styles.searchInput}
+                        placeholder="Search menu..."
+                        value={searchQuery}
+                        onChangeText={handleSearch}
+                        placeholderTextColor={colors.textLight}
+                    />
+                    {searchQuery.length > 0 && (
+                        <TouchableOpacity
+                            onPress={() => {
+                                setSearchQuery('');
+                                setIsSearching(false);
+                            }}
+                            style={styles.clearButton}
+                        >
+                            <Text style={styles.clearButtonText}>×</Text>
+                        </TouchableOpacity>
+                    )}
                 </View>
+
+                <TouchableOpacity
+                    style={styles.cartButton}
+                    onPress={handleViewCart}
+                    activeOpacity={0.7}
+                >
+                    <ShoppingCart size={24} color={colors.text} />
+                    {getItemCount() > 0 && (
+                        <View style={styles.cartBadge}>
+                            <Text style={styles.cartBadgeText}>{getItemCount()}</Text>
+                        </View>
+                    )}
+                </TouchableOpacity>
             </View>
 
-            <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-                {/* Categories */}
-                <View style={styles.section}>
-                    <Text style={styles.sectionTitle}>Categories</Text>
-                    <View style={styles.categoriesGrid}>
-                        {categories.map((category) => (
-                            <TouchableOpacity
-                                key={category.id}
-                                style={styles.categoryCard}
-                                onPress={() => router.push(`/menu/${category.id}`)}
-                            >
-                                <Text style={styles.categoryName}>{category.name}</Text>
-                                <Text style={styles.categoryCount}>{category.count} items</Text>
-                            </TouchableOpacity>
-                        ))}
-                    </View>
-                </View>
+            {!isSearching && (
+                <CategoryTabs
+                    categories={categories}
+                    selectedCategoryId={selectedCategoryId}
+                    onSelectCategory={handleCategorySelect}
+                />
+            )}
 
-                {/* Featured Items */}
-                <View style={styles.section}>
-                    <Text style={styles.sectionTitle}>Featured Items</Text>
-                    <Text style={styles.comingSoon}>Coming soon...</Text>
+            {isLoading && !refreshing ? (
+                <View style={styles.loadingContainer}>
+                    <ActivityIndicator size="large" color={colors.primary} />
                 </View>
-            </ScrollView>
+            ) : (
+                <Animated.View
+                    style={[
+                        { flex: 1 },
+                        {
+                            opacity: fadeAnim,
+                            transform: [{ scale: scaleAnim }]
+                        }
+                    ]}
+                >
+                    <FlatList
+                        data={displayedItems}
+                        renderItem={({ item }) => (
+                            <MenuItemCard
+                                item={item}
+                                onPress={handleItemPress}
+                                onAddToCart={handleAddToCart}
+                            />
+                        )}
+                        keyExtractor={(item) => item.id}
+                        numColumns={3}
+                        contentContainerStyle={styles.menuGrid}
+                        refreshControl={
+                            <RefreshControl
+                                refreshing={refreshing}
+                                onRefresh={handleRefresh}
+                                colors={[colors.primary]}
+                                tintColor={colors.primary}
+                            />
+                        }
+                        ListEmptyComponent={
+                            <View style={styles.emptyContainer}>
+                                <Text style={styles.emptyText}>
+                                    {isSearching
+                                        ? `No results found for "${searchQuery}"`
+                                        : 'No items in this category'}
+                                </Text>
+                            </View>
+                        }
+                    />
+                </Animated.View>
+            )}
+
+            <Animated.View
+                style={[
+                    styles.cartSummaryContainer,
+                    {
+                        transform: [{ translateY: cartSlideAnim }],
+                        opacity: cartOpacityAnim
+                    }
+                ]}
+            >
+                <CartSummary
+                    itemCount={getItemCount()}
+                    totalAmount={cart.totalAmount}
+                    onPress={handleViewCart}
+                />
+            </Animated.View>
         </View>
     );
 }
 
-const createStyles = (colors: any) => StyleSheet.create({
+const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: colors.background,
     },
     header: {
         flexDirection: 'row',
-        justifyContent: 'space-between',
         alignItems: 'center',
         paddingHorizontal: 16,
-        paddingVertical: 16,
+        paddingVertical: 12,
         backgroundColor: colors.card,
         borderBottomWidth: 1,
         borderBottomColor: colors.border,
     },
-    title: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        color: colors.text,
-    },
-    headerActions: {
-        flexDirection: 'row',
-        gap: 8,
-    },
-    actionButton: {
-        padding: 8,
-        borderRadius: 8,
-        backgroundColor: colors.background,
-    },
-    content: {
+    searchContainer: {
         flex: 1,
-    },
-    section: {
-        padding: 16,
-    },
-    sectionTitle: {
-        fontSize: 18,
-        fontWeight: '600',
-        color: colors.text,
-        marginBottom: 16,
-    },
-    categoriesGrid: {
         flexDirection: 'row',
-        flexWrap: 'wrap',
-        gap: 12,
-    },
-    categoryCard: {
-        flex: 1,
-        minWidth: '45%',
-        backgroundColor: colors.card,
-        borderRadius: 12,
-        padding: 16,
         alignItems: 'center',
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.1,
-        shadowRadius: 2,
-        elevation: 2,
+        backgroundColor: colors.background,
+        borderRadius: 8,
+        paddingHorizontal: 12,
+        height: 40,
     },
-    categoryName: {
-        fontSize: 16,
-        fontWeight: '600',
+    searchIcon: {
+        marginRight: 8,
+    },
+    searchInput: {
+        flex: 1,
+        height: 40,
         color: colors.text,
-        marginBottom: 4,
-    },
-    categoryCount: {
-        fontSize: 14,
-        color: colors.textLight,
-    },
-    comingSoon: {
         fontSize: 16,
+    },
+    clearButton: {
+        padding: 4,
+    },
+    clearButtonText: {
+        fontSize: 20,
         color: colors.textLight,
-        textAlign: 'center',
-        fontStyle: 'italic',
+        fontWeight: 'bold',
+    },
+    cartButton: {
+        marginLeft: 16,
+        position: 'relative',
+        padding: 4,
+    },
+    cartBadge: {
+        position: 'absolute',
+        top: 0,
+        right: 0,
+        backgroundColor: colors.primary,
+        borderRadius: 10,
+        width: 18,
+        height: 18,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    cartBadgeText: {
+        color: '#fff',
+        fontSize: 10,
+        fontWeight: 'bold',
+    },
+    menuGrid: {
+        padding: 8,
+    },
+    loadingContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    emptyContainer: {
+        padding: 20,
+        alignItems: 'center',
+    },
+    emptyText: {
+        color: colors.textLight,
+        fontSize: 16,
+    },
+    cartSummaryContainer: {
+        position: 'absolute',
+        bottom: 0,
+        left: 0,
+        right: 0,
+        alignItems: 'center',
+        paddingBottom: 20,
     },
 });

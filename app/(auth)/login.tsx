@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import {
     StyleSheet,
@@ -14,13 +13,12 @@ import { LinearGradient } from "expo-linear-gradient";
 import { Link, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { LoginForm } from "@/components/auth/LoginForm";
-import { useAppTheme } from "@/components/common/AppThemeProvider";
+import { colors } from "@/constants/colors";
 import { useAuthStore } from "@/store/authStore";
 
 export default function LoginScreen() {
     const router = useRouter();
     const { users } = useAuthStore();
-    const { colors, isDark } = useAppTheme();
 
     const handleDemoLogin = () => {
         Alert.alert(
@@ -32,11 +30,9 @@ export default function LoginScreen() {
         );
     };
 
-    const styles = createStyles(colors);
-
     return (
         <View style={styles.container}>
-            <StatusBar style={isDark ? "light" : "dark"} />
+            <StatusBar style="light" />
             <LinearGradient
                 colors={[colors.gradientStart, colors.gradientEnd]}
                 style={styles.gradient}
@@ -88,7 +84,7 @@ export default function LoginScreen() {
     );
 }
 
-const createStyles = (colors: any) => StyleSheet.create({
+const styles = StyleSheet.create({
     container: {
         flex: 1,
     },
@@ -118,7 +114,7 @@ const createStyles = (colors: any) => StyleSheet.create({
     },
     formContainer: {
         flex: 1,
-        backgroundColor: colors.card,
+        backgroundColor: "#fff",
         borderTopLeftRadius: 30,
         borderTopRightRadius: 30,
         paddingTop: 30,

@@ -1,38 +1,21 @@
-
-import React, { createContext, useContext, useEffect } from 'react';
-import { StatusBar } from 'expo-status-bar';
-import { useThemeStore, ThemeColors } from '@/store/themeStore';
+import React, { createContext, useContext } from 'react';
+import { colors } from '../../constants/colors';
 
 interface AppTheme {
-    colors: ThemeColors;
-    isDark: boolean;
-    toggleTheme: () => void;
-    setTheme: (mode: 'light' | 'dark' | 'system') => void;
+    colors: typeof colors;
 }
 
-const ThemeContext = createContext<AppTheme | null>(null);
-
-export const useAppTheme = () => {
-    const context = useContext(ThemeContext);
-    if (!context) {
-        throw new Error('useAppTheme must be used within AppThemeProvider');
-    }
-    return context;
+const defaultTheme: AppTheme = {
+    colors
 };
 
+const ThemeContext = createContext<AppTheme>(defaultTheme);
+
+export const useAppTheme = () => useContext(ThemeContext);
+
 export function AppThemeProvider({ children }: { children: React.ReactNode }) {
-    const { colors, isDark, toggleTheme, setTheme } = useThemeStore();
-
-    const theme: AppTheme = {
-        colors,
-        isDark,
-        toggleTheme,
-        setTheme,
-    };
-
     return (
-        <ThemeContext.Provider value={theme}>
-            <StatusBar style={isDark ? 'light' : 'dark'} />
+        <ThemeContext.Provider value={defaultTheme}>
             {children}
         </ThemeContext.Provider>
     );
