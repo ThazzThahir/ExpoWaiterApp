@@ -168,7 +168,6 @@ export default function TablesScreen() {
                         {renderFilterButton('occupied', 'Occupied')}
                     </View>
                 </View>
-            </View>
 
             {isLoading && !refreshing ? (
                 <View style={styles.loadingContainer}>

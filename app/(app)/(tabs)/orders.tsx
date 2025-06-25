@@ -14,11 +14,14 @@ import { OrderCard } from '@/components/orders/OrderCard';
 import { useOrderStore } from '@/store/orderStore';
 import { colors } from '@/constants/colors';
 import { OrderStatus } from '@/types';
+import { useAppTheme } from '@/hooks/useAppTheme';
 
 export default function OrdersScreen() {
+    const { orders, updateOrderStatus } = useOrderStore();
+    const { colors } = useAppTheme();
+
     const router = useRouter();
     const {
-        orders,
         isLoading,
         fetchOrders,
         getActiveOrders,
@@ -54,9 +57,9 @@ export default function OrdersScreen() {
         : getCompletedOrders();
 
     return (
-        <View style={styles.container}>
-            <View style={styles.header}>
-                <Text style={styles.title}>Orders</Text>
+        <View style={[styles.container, { backgroundColor: colors.background }]}>
+            <View style={[styles.header, { borderBottomColor: colors.border, backgroundColor: colors.card }]}>
+                <Text style={[styles.title, { color: colors.text }]}>Orders</Text>
                 <View style={styles.tabs}>
                     <TouchableOpacity
                         style={[
@@ -115,7 +118,7 @@ export default function OrdersScreen() {
                     }
                     ListEmptyComponent={
                         <View style={styles.emptyContainer}>
-                            <Text style={styles.emptyText}>
+                            <Text style={[styles.emptyText, {color: colors.textLight}]}>
                                 No {activeTab} orders found
                             </Text>
                         </View>
@@ -124,7 +127,7 @@ export default function OrdersScreen() {
             )}
 
             {activeTab === 'active' && (
-                <TouchableOpacity style={styles.fab}>
+                <TouchableOpacity style={[styles.fab, { backgroundColor: colors.primary }]}>
                     <Plus size={24} color="#fff" />
                 </TouchableOpacity>
             )}
@@ -135,20 +138,16 @@ export default function OrdersScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: colors.background,
     },
     header: {
         paddingHorizontal: 16,
         paddingTop: 12,
         paddingBottom: 0,
         borderBottomWidth: 1,
-        borderBottomColor: colors.border,
-        backgroundColor: colors.card,
     },
     title: {
         fontSize: 20,
         fontWeight: 'bold',
-        color: colors.text,
         marginBottom: 12,
     },
     tabs: {
@@ -162,15 +161,12 @@ const styles = StyleSheet.create({
     },
     activeTab: {
         borderBottomWidth: 2,
-        borderBottomColor: colors.primary,
     },
     tabText: {
         fontSize: 14,
         fontWeight: '500',
-        color: colors.textLight,
     },
     activeTabText: {
-        color: colors.primary,
     },
     ordersList: {
         padding: 16,
@@ -185,7 +181,6 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     emptyText: {
-        color: colors.textLight,
         fontSize: 16,
     },
     fab: {
@@ -195,7 +190,6 @@ const styles = StyleSheet.create({
         width: 56,
         height: 56,
         borderRadius: 28,
-        backgroundColor: colors.primary,
         justifyContent: 'center',
         alignItems: 'center',
         elevation: 4,

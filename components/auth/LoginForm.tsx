@@ -12,10 +12,11 @@ import {
 import { User, Lock, Eye, EyeOff } from 'lucide-react-native';
 import { useAuthStore } from '@/store/authStore';
 import { validateUsername, validatePassword } from '@/utils/validation';
-import { colors } from '@/constants/colors';
+import { useAppTheme } from '@/components/common/AppThemeProvider';
 
 export const LoginForm = () => {
     const { login, isLoading, error, clearError } = useAuthStore();
+    const { colors } = useAppTheme();
 
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');

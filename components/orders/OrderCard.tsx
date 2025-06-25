@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import { Clock, Users, ShoppingBag, DollarSign, Edit, Printer, Check } from 'lucide-react-native';
 import { Order } from '@/types';
-import { colors } from '@/constants/colors';
+import { useAppTheme } from '@/components/common/AppThemeProvider';
 import { formatCurrency, formatDate } from '@/utils/validation';
 
 interface OrderCardProps {
@@ -16,6 +16,7 @@ export const OrderCard: React.FC<OrderCardProps> = ({
     onPress,
     onStatusChange,
 }) => {
+    const { colors } = useAppTheme();
     const getProgressPercentage = () => {
         switch (order.status) {
             case 'preparing':

@@ -21,19 +21,13 @@ import { CategoryTabs } from '@/components/menu/CategoryTabs';
 import { MenuItemCard } from '@/components/menu/MenuItemCard';
 import { CartSummary } from '@/components/menu/CartSummary';
 import { MenuItem } from '@/types/menu';
+import { useAppTheme } from '@/store/themeStore';
 
 export default function MenuScreen() {
     const router = useRouter();
-    const {
-        menuItems,
-        categories,
-        isLoading,
-        fetchMenu,
-        getMenuItemsByCategory,
-        searchMenuItems,
-    } = useMenuStore();
-
+    const { menuItems, categories, isLoading, fetchMenu, getMenuItemsByCategory, searchMenuItems } = useMenuStore();
     const { cart, getItemCount, addToCart } = useCartStore();
+    const { colors } = useAppTheme();
 
     const [refreshing, setRefreshing] = useState(false);
     const [selectedCategoryId, setSelectedCategoryId] = useState('');
@@ -190,12 +184,12 @@ export default function MenuScreen() {
         : getMenuItemsByCategory(selectedCategoryId);
 
     return (
-        <View style={styles.container}>
-            <View style={styles.header}>
-                <View style={styles.searchContainer}>
+        <View style={[styles.container, { backgroundColor: colors.background }]}>
+            <View style={[styles.header, { backgroundColor: colors.card, borderBottomColor: colors.border }]}>
+                <View style={[styles.searchContainer, { backgroundColor: colors.background }]}>
                     <Search size={20} color={colors.textLight} style={styles.searchIcon} />
                     <TextInput
-                        style={styles.searchInput}
+                        style={[styles.searchInput, { color: colors.text }]}
                         placeholder="Search menu..."
                         value={searchQuery}
                         onChangeText={handleSearch}
@@ -272,7 +266,7 @@ export default function MenuScreen() {
                         }
                         ListEmptyComponent={
                             <View style={styles.emptyContainer}>
-                                <Text style={styles.emptyText}>
+                                <Text style={[styles.emptyText, { color: colors.textLight }]}>
                                     {isSearching
                                         ? `No results found for "${searchQuery}"`
                                         : 'No items in this category'}

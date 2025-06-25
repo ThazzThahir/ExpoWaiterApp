@@ -1,4 +1,10 @@
-// Color palette for the restaurant management app
+
+import { useThemeStore } from '@/store/themeStore';
+
+// Export the theme hook for easy access
+export const useThemeColors = () => useThemeStore(state => state.colors);
+
+// Legacy export for backward compatibility
 export const colors = {
     // Primary colors
     primary: '#3498db',
