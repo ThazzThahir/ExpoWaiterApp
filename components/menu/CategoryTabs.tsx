@@ -1,4 +1,5 @@
-import React, { useRef, useEffect } from 'react';
+
+import React, { useRef, useEffect, useState } from 'react';
 import {
     StyleSheet,
     Text,
@@ -7,8 +8,9 @@ import {
     TouchableOpacity,
     Dimensions,
     Platform,
+    Animated,
 } from 'react-native';
-import { BlurView } from 'expo-blur';
+import { LinearGradient } from 'expo-linear-gradient';
 import { colors } from '@/constants/colors';
 import { Category } from '@/types/menu';
 
@@ -23,53 +25,55 @@ export const CategoryTabs: React.FC<CategoryTabsProps> = ({
     selectedCategoryId,
     onSelectCategory
 }) => {
-    // Sort categories by order
     const sortedCategories = [...categories].sort((a, b) => a.order - b.order);
     const scrollViewRef = useRef<ScrollView>(null);
+    const [tabLayouts, setTabLayouts] = useState<{ [key: string]: { x: number; width: number } }>({});
+    const slideAnim = useRef(new Animated.Value(0)).current;
+    const scaleAnim = useRef(new Animated.Value(1)).current;
 
-    // Scroll to the selected category when it changes
     useEffect(() => {
-        if (scrollViewRef.current && selectedCategoryId) {
-            // Find the index of the selected category
-            const selectedIndex = sortedCategories.findIndex(cat => cat.id === selectedCategoryId);
-            if (selectedIndex !== -1) {
-                // Calculate approximate scroll position (this is an estimation)
-                const scrollX = selectedIndex * 100; // Assuming average tab width of 100
-
-                // Scroll with animation
-                scrollViewRef.current.scrollTo({ x: scrollX, animated: true });
-            }
+        if (scrollViewRef.current && selectedCategoryId && tabLayouts[selectedCategoryId]) {
+            const layout = tabLayouts[selectedCategoryId];
+            const screenWidth = Dimensions.get('window').width;
+            const scrollX = Math.max(0, layout.x - screenWidth / 2 + layout.width / 2);
+            
+            scrollViewRef.current.scrollTo({ x: scrollX, animated: true });
+            
+            // Animate indicator
+            Animated.parallel([
+                Animated.spring(slideAnim, {
+                    toValue: layout.x,
+                    useNativeDriver: false,
+                    tension: 150,
+                    friction: 8,
+                }),
+                Animated.sequence([
+                    Animated.timing(scaleAnim, {
+                        toValue: 0.95,
+                        duration: 100,
+                        useNativeDriver: true,
+                    }),
+                    Animated.timing(scaleAnim, {
+                        toValue: 1,
+                        duration: 150,
+                        useNativeDriver: true,
+                    })
+                ])
+            ]).start();
         }
-    }, [selectedCategoryId]);
+    }, [selectedCategoryId, tabLayouts]);
 
-    const renderTab = (category: Category) => {
+    const handleLayout = (categoryId: string, event: any) => {
+        const { x, width } = event.nativeEvent.layout;
+        setTabLayouts(prev => ({
+            ...prev,
+            [categoryId]: { x: x + 16, width } // Adding padding offset
+        }));
+    };
+
+    const renderTab = (category: Category, index: number) => {
         const isSelected = selectedCategoryId === category.id;
 
-        // On web, we don't use BlurView as it's not fully supported
-        if (Platform.OS === 'web') {
-            return (
-                <TouchableOpacity
-                    key={category.id}
-                    style={[
-                        styles.tab,
-                        isSelected && styles.selectedTab
-                    ]}
-                    onPress={() => onSelectCategory(category.id)}
-                    activeOpacity={0.7}
-                >
-                    <Text
-                        style={[
-                            styles.tabText,
-                            isSelected && styles.selectedTabText
-                        ]}
-                    >
-                        {category.name}
-                    </Text>
-                </TouchableOpacity>
-            );
-        }
-
-        // On native platforms, use BlurView for inactive tabs
         return (
             <TouchableOpacity
                 key={category.id}
@@ -79,13 +83,20 @@ export const CategoryTabs: React.FC<CategoryTabsProps> = ({
                 ]}
                 onPress={() => onSelectCategory(category.id)}
                 activeOpacity={0.7}
+                onLayout={(event) => handleLayout(category.id, event)}
             >
-                {!isSelected ? (
-                    <BlurView intensity={10} style={styles.blurContainer}>
-                        <Text style={styles.tabText}>{category.name}</Text>
-                    </BlurView>
-                ) : (
-                    <Text style={styles.selectedTabText}>{category.name}</Text>
+                <Animated.View style={{ transform: [{ scale: isSelected ? scaleAnim : 1 }] }}>
+                    <Text
+                        style={[
+                            styles.tabText,
+                            isSelected && styles.selectedTabText
+                        ]}
+                    >
+                        {category.name}
+                    </Text>
+                </Animated.View>
+                {isSelected && (
+                    <View style={styles.selectedIndicator} />
                 )}
             </TouchableOpacity>
         );
@@ -93,16 +104,35 @@ export const CategoryTabs: React.FC<CategoryTabsProps> = ({
 
     return (
         <View style={styles.container}>
-            <ScrollView
-                ref={scrollViewRef}
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                contentContainerStyle={styles.scrollContent}
-                decelerationRate="fast"
-                snapToAlignment="center"
+            <LinearGradient
+                colors={['rgba(255,255,255,0.9)', 'rgba(255,255,255,0.7)']}
+                style={styles.gradient}
             >
-                {sortedCategories.map(renderTab)}
-            </ScrollView>
+                <ScrollView
+                    ref={scrollViewRef}
+                    horizontal
+                    showsHorizontalScrollIndicator={false}
+                    contentContainerStyle={styles.scrollContent}
+                    decelerationRate="fast"
+                    snapToAlignment="center"
+                    bounces={false}
+                >
+                    {sortedCategories.map(renderTab)}
+                </ScrollView>
+                
+                {/* Animated indicator line */}
+                {selectedCategoryId && tabLayouts[selectedCategoryId] && (
+                    <Animated.View
+                        style={[
+                            styles.animatedIndicator,
+                            {
+                                left: slideAnim,
+                                width: tabLayouts[selectedCategoryId]?.width || 0,
+                            }
+                        ]}
+                    />
+                )}
+            </LinearGradient>
         </View>
     );
 };
@@ -112,38 +142,62 @@ const styles = StyleSheet.create({
         backgroundColor: colors.card,
         borderBottomWidth: 1,
         borderBottomColor: colors.border,
+        elevation: 4,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+    },
+    gradient: {
+        paddingVertical: 4,
     },
     scrollContent: {
-        paddingHorizontal: 8,
+        paddingHorizontal: 16,
+        alignItems: 'center',
     },
     tab: {
         paddingVertical: 12,
-        paddingHorizontal: 16,
+        paddingHorizontal: 20,
         marginHorizontal: 4,
-        borderRadius: 20,
-        minWidth: 80,
+        borderRadius: 25,
+        minWidth: 90,
         alignItems: 'center',
         justifyContent: 'center',
+        position: 'relative',
+        backgroundColor: 'transparent',
     },
     selectedTab: {
         backgroundColor: colors.primary,
-    },
-    blurContainer: {
-        borderRadius: 20,
-        overflow: 'hidden',
-        paddingVertical: 12,
-        paddingHorizontal: 16,
-        alignItems: 'center',
-        justifyContent: 'center',
+        elevation: 2,
+        shadowColor: colors.primary,
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.3,
+        shadowRadius: 4,
     },
     tabText: {
         fontSize: 14,
-        fontWeight: '500',
+        fontWeight: '600',
         color: colors.text,
     },
     selectedTabText: {
         color: '#fff',
         fontWeight: 'bold',
-        fontSize: 14,
+    },
+    selectedIndicator: {
+        position: 'absolute',
+        bottom: -2,
+        left: '50%',
+        transform: [{ translateX: -2 }],
+        width: 4,
+        height: 4,
+        borderRadius: 2,
+        backgroundColor: '#fff',
+    },
+    animatedIndicator: {
+        position: 'absolute',
+        bottom: 0,
+        height: 3,
+        backgroundColor: colors.primary,
+        borderRadius: 1.5,
     },
 });

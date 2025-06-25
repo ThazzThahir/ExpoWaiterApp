@@ -107,21 +107,31 @@ export const useOrderStore = create<OrderState>((set, get) => ({
         return get().orders.filter(order => order.status === 'completed');
     },
 
-    updateOrderStatus: (id, status) => {
-        set((state) => {
-            const updatedOrders = state.orders.map(order => {
-                if (order.id === id) {
-                    return {
-                        ...order,
-                        status,
-                        updatedAt: new Date().toISOString()
-                    };
-                }
-                return order;
-            });
+    updateOrderStatus: (orderId: string, status: OrderStatus) => {
+        set((state) => ({
+            orders: state.orders.map(order =>
+                order.id === orderId ? { ...order, status } : order
+            )
+        }));
+    },
 
-            return { orders: updatedOrders };
-        });
+    simulateOrderProgress: (orderId: string) => {
+        const { orders, updateOrderStatus } = get();
+        const order = orders.find(o => o.id === orderId);
+
+        if (!order) return;
+
+        // Progress order to next stage
+        switch (order.status) {
+            case 'preparing':
+                updateOrderStatus(orderId, 'serving');
+                break;
+            case 'serving':
+                updateOrderStatus(orderId, 'completed');
+                break;
+            default:
+                break;
+        }
     },
 
     getOrderById: (id) => {
