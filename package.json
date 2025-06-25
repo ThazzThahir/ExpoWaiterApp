@@ -3,6 +3,7 @@
     "main": "expo-router/entry",
     "version": "1.0.0",
     "scripts": {
+        "expo": "expo start"
         "start": "bun run expo start",
         "android": "bun run expo start --android",
         "ios": "bun run expo start --ios",

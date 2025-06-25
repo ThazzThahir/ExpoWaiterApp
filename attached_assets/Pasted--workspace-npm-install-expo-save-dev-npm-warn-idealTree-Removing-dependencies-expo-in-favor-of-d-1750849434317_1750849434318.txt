@@ -1,0 +1,147 @@
+~/workspace$ npm install expo --save-dev
+npm warn idealTree Removing dependencies.expo in favor of devDependencies.expo
+npm warn ERESOLVE overriding peer dependency
+npm warn While resolving: @react-navigation/bottom-tabs@7.3.15
+npm warn Found: react@18.0.0
+npm warn node_modules/react
+npm warn   peer react@"*" from @expo/vector-icons@14.1.0
+npm warn   node_modules/@expo/vector-icons
+npm warn     @expo/vector-icons@"^14.1.0" from the root project
+npm warn     1 more (expo)
+npm warn   26 more (@radix-ui/react-compose-refs, @radix-ui/react-slot, ...)
+npm warn
+npm warn Could not resolve dependency:
+npm warn peer react@">= 18.2.0" from @react-navigation/bottom-tabs@7.3.15
+npm warn node_modules/@react-navigation/bottom-tabs
+npm warn   @react-navigation/bottom-tabs@"^7.3.10" from expo-router@5.1.0
+npm warn   node_modules/expo-router
+npm warn
+npm warn Conflicting peer dependency: react@19.1.0
+npm warn node_modules/react
+npm warn   peer react@">= 18.2.0" from @react-navigation/bottom-tabs@7.3.15
+npm warn   node_modules/@react-navigation/bottom-tabs
+npm warn     @react-navigation/bottom-tabs@"^7.3.10" from expo-router@5.1.0
+npm warn     node_modules/expo-router
+npm warn ERESOLVE overriding peer dependency
+npm warn While resolving: @react-navigation/core@7.10.1
+npm warn Found: react@18.0.0
+npm warn node_modules/react
+npm warn   peer react@"*" from @expo/vector-icons@14.1.0
+npm warn   node_modules/@expo/vector-icons
+npm warn     @expo/vector-icons@"^14.1.0" from the root project
+npm warn     1 more (expo)
+npm warn   26 more (@radix-ui/react-compose-refs, @radix-ui/react-slot, ...)
+npm warn
+npm warn Could not resolve dependency:
+npm warn peer react@">= 18.2.0" from @react-navigation/core@7.10.1
+npm warn node_modules/@react-navigation/core
+npm warn   @react-navigation/core@"^7.10.1" from @react-navigation/native@7.1.11
+npm warn   node_modules/@react-navigation/native
+npm warn
+npm warn Conflicting peer dependency: react@19.1.0
+npm warn node_modules/react
+npm warn   peer react@">= 18.2.0" from @react-navigation/core@7.10.1
+npm warn   node_modules/@react-navigation/core
+npm warn     @react-navigation/core@"^7.10.1" from @react-navigation/native@7.1.11
+npm warn     node_modules/@react-navigation/native
+npm warn ERESOLVE overriding peer dependency
+npm warn While resolving: @react-navigation/elements@2.4.4
+npm warn Found: react@18.0.0
+npm warn node_modules/react
+npm warn   peer react@"*" from @expo/vector-icons@14.1.0
+npm warn   node_modules/@expo/vector-icons
+npm warn     @expo/vector-icons@"^14.1.0" from the root project
+npm warn     1 more (expo)
+npm warn   26 more (@radix-ui/react-compose-refs, @radix-ui/react-slot, ...)
+npm warn
+npm warn Could not resolve dependency:
+npm warn peer react@">= 18.2.0" from @react-navigation/elements@2.4.4
+npm warn node_modules/@react-navigation/elements
+npm warn   @react-navigation/elements@"^2.4.4" from @react-navigation/bottom-tabs@7.3.15
+npm warn   node_modules/@react-navigation/bottom-tabs
+npm warn   1 more (@react-navigation/native-stack)
+npm warn
+npm warn Conflicting peer dependency: react@19.1.0
+npm warn node_modules/react
+npm warn   peer react@">= 18.2.0" from @react-navigation/elements@2.4.4
+npm warn   node_modules/@react-navigation/elements
+npm warn     @react-navigation/elements@"^2.4.4" from @react-navigation/bottom-tabs@7.3.15
+npm warn     node_modules/@react-navigation/bottom-tabs
+npm warn     1 more (@react-navigation/native-stack)
+npm error code ERESOLVE
+npm error ERESOLVE could not resolve
+npm error
+npm error While resolving: @react-navigation/native@7.1.11
+npm error Found: react@18.0.0
+npm error node_modules/react
+npm error   peer react@"*" from @expo/vector-icons@14.1.0
+npm error   node_modules/@expo/vector-icons
+npm error     @expo/vector-icons@"^14.1.0" from the root project
+npm error     @expo/vector-icons@"^14.0.0" from expo@53.0.12
+npm error     node_modules/expo
+npm error       dev expo@"*" from the root project
+npm error       17 more (expo-asset, expo-blur, expo-constants, expo-file-system, ...)
+npm error   peer react@"^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc" from @radix-ui/react-compose-refs@1.1.2
+npm error   node_modules/@radix-ui/react-compose-refs
+npm error     @radix-ui/react-compose-refs@"1.1.2" from @radix-ui/react-slot@1.2.0
+npm error     node_modules/@radix-ui/react-slot
+npm error       @radix-ui/react-slot@"1.2.0" from expo-router@5.1.0
+npm error       node_modules/expo-router
+npm error         expo-router@"~5.1.0" from the root project
+npm error   25 more (@radix-ui/react-slot, ...)
+npm error
+npm error Could not resolve dependency:
+npm error peer react@">= 18.2.0" from @react-navigation/native@7.1.11
+npm error node_modules/@react-navigation/native
+npm error   peer @react-navigation/native@"^7.1.11" from @react-navigation/bottom-tabs@7.3.15
+npm error   node_modules/@react-navigation/bottom-tabs
+npm error     @react-navigation/bottom-tabs@"^7.3.10" from expo-router@5.1.0
+npm error     node_modules/expo-router
+npm error       expo-router@"~5.1.0" from the root project
+npm error   peer @react-navigation/native@"^7.1.11" from @react-navigation/elements@2.4.4
+npm error   node_modules/@react-navigation/elements
+npm error     @react-navigation/elements@"^2.4.4" from @react-navigation/bottom-tabs@7.3.15
+npm error     node_modules/@react-navigation/bottom-tabs
+npm error       @react-navigation/bottom-tabs@"^7.3.10" from expo-router@5.1.0
+npm error       node_modules/expo-router
+npm error     1 more (@react-navigation/native-stack)
+npm error   3 more (@react-navigation/native-stack, expo-router, the root project)
+npm error
+npm error Conflicting peer dependency: react@19.1.0
+npm error node_modules/react
+npm error   peer react@">= 18.2.0" from @react-navigation/native@7.1.11
+npm error   node_modules/@react-navigation/native
+npm error     peer @react-navigation/native@"^7.1.11" from @react-navigation/bottom-tabs@7.3.15
+npm error     node_modules/@react-navigation/bottom-tabs
+npm error       @react-navigation/bottom-tabs@"^7.3.10" from expo-router@5.1.0
+npm error       node_modules/expo-router
+npm error         expo-router@"~5.1.0" from the root project
+npm error     peer @react-navigation/native@"^7.1.11" from @react-navigation/elements@2.4.4
+npm error     node_modules/@react-navigation/elements
+npm error       @react-navigation/elements@"^2.4.4" from @react-navigation/bottom-tabs@7.3.15
+npm error       node_modules/@react-navigation/bottom-tabs
+npm error         @react-navigation/bottom-tabs@"^7.3.10" from expo-router@5.1.0
+npm error         node_modules/expo-router
+npm error       1 more (@react-navigation/native-stack)
+npm error     3 more (@react-navigation/native-stack, expo-router, the root project)
+npm error
+npm error Fix the upstream dependency conflict, or retry
+npm error this command with --force or --legacy-peer-deps
+npm error to accept an incorrect (and potentially broken) dependency resolution.
+npm error
+npm error
+npm error For a full report see:
+npm error /home/runner/.npm/_logs/2025-06-25T11_02_14_525Z-eresolve-report.txt
+npm notice
+npm notice New major version of npm available! 10.8.2 -> 11.4.2
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v11.4.2
+npm notice To update run: npm install -g npm@11.4.2
+npm notice
+npm error A complete log of this run can be found in: /home/runner/.npm/_logs/2025-06-25T11_02_14_525Z-debug-0.log
+~/workspace$ npm run expo
+npm error code EJSONPARSE
+npm error JSON.parse Invalid package.json: JSONParseError: Expected ',' or '}' after property value in JSON at position 137 while parsing near "...expo start\"\n        \"start\": \"bun run ex..."
+npm error JSON.parse Failed to parse JSON data.
+npm error JSON.parse Note: package.json must be actual JSON, not just JavaScript.
+npm error A complete log of this run can be found in: /home/runner/.npm/_logs/2025-06-25T11_03_38_986Z-debug-0.log
+~/workspace$ 
