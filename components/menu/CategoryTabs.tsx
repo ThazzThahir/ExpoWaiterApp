@@ -114,19 +114,20 @@ const styles = StyleSheet.create({
         borderBottomColor: colors.border,
     },
     scrollContent: {
-        paddingHorizontal: 8,
+        paddingHorizontal: 2,
     },
     tab: {
-        paddingVertical: 12,
+        paddingVertical: 3,
         paddingHorizontal: 16,
-        marginHorizontal: 4,
-        borderRadius: 20,
-        minWidth: 80,
+        margin: 6,
+        borderRadius: 6,
+        minWidth: 60,
         alignItems: 'center',
         justifyContent: 'center',
     },
     selectedTab: {
-        backgroundColor: colors.primary,
+        // Remove background color for selected tab highlight
+        backgroundColor: colors.primary, // Removed
     },
     blurContainer: {
         borderRadius: 20,
@@ -137,13 +138,13 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     tabText: {
-        fontSize: 14,
+        fontSize: 15,
         fontWeight: '500',
         color: colors.text,
     },
     selectedTabText: {
         color: '#fff',
         fontWeight: 'bold',
-        fontSize: 14,
+        fontSize: 17,
     },
 });

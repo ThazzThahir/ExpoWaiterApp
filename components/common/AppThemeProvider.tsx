@@ -1,21 +1,19 @@
 import React, { createContext, useContext } from 'react';
-import { colors } from '../../constants/colors';
+import { colors as lightColors } from '../../constants/colors';
 
 interface AppTheme {
-    colors: typeof colors;
+    colors: typeof lightColors;
 }
 
-const defaultTheme: AppTheme = {
-    colors
-};
-
-const ThemeContext = createContext<AppTheme>(defaultTheme);
+const ThemeContext = createContext<AppTheme>({
+    colors: lightColors,
+});
 
 export const useAppTheme = () => useContext(ThemeContext);
 
 export function AppThemeProvider({ children }: { children: React.ReactNode }) {
     return (
-        <ThemeContext.Provider value={defaultTheme}>
+        <ThemeContext.Provider value={{ colors: lightColors }}>
             {children}
         </ThemeContext.Provider>
     );
