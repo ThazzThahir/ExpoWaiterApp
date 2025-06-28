@@ -1,9 +1,11 @@
 import React from 'react';
-import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, Alert } from 'react-native';
 import { Clock, Users, ShoppingBag, DollarSign, Edit, Printer, Check } from 'lucide-react-native';
 import { Order } from '@/types';
 import { colors } from '@/constants/colors';
 import { formatCurrency, formatDate } from '@/utils/validation';
+import { OrderDetailModal } from './OrderDetailModal';
+import { OrderModificationModal } from './OrderModificationModal';
 
 interface OrderCardProps {
     order: Order;
@@ -42,98 +44,165 @@ export const OrderCard: React.FC<OrderCardProps> = ({
 
     const handleStatusChange = () => {
         if (order.status !== 'completed') {
-            onStatusChange(order.id, getNextStatus());
+            const nextStatus = getNextStatus();
+            const updateStatus = () => {
+                setOrderState({ ...orderState, status: nextStatus });
+                onStatusChange(order.id, nextStatus);
+            };
+            if (nextStatus === 'completed') {
+                // Show confirmation before completing
+                Alert.alert(
+                    'Confirm Completion',
+                    'Are you sure you want to mark this order as Completed?',
+                    [
+                        { text: 'Cancel', style: 'cancel' },
+                        { text: 'Yes, Complete Order', style: 'destructive', onPress: updateStatus },
+                    ]
+                );
+            } else if (nextStatus === 'serving') {
+                // Show confirmation before serving
+                Alert.alert(
+                    'Confirm Serve',
+                    'Are you sure you want to mark this order as Serving?',
+                    [
+                        { text: 'Cancel', style: 'cancel' },
+                        { text: 'Yes, Mark as Serving', style: 'default', onPress: updateStatus },
+                    ]
+                );
+            } else {
+                updateStatus();
+            }
         }
     };
 
+    const [modalVisible, setModalVisible] = React.useState(false);
+    const [modModalVisible, setModModalVisible] = React.useState(false);
+    const [orderState, setOrderState] = React.useState(order);
+
+    // Handler for status change
+    const handleChangeStatus = (status: 'preparing' | 'serving' | 'completed') => {
+        setOrderState({ ...orderState, status });
+        onStatusChange(order.id, status);
+    };
+    // Handler for cancel order
+    const handleCancelOrder = () => {
+        setModModalVisible(false);
+        // Optionally, call a prop or store action
+    };
+    // Handler for cancel item
+    const handleCancelItem = (itemId: string) => {
+        setOrderState({
+            ...orderState,
+            items: orderState.items.filter(item => item.id !== itemId)
+        });
+    };
+
     return (
-        <TouchableOpacity
-            style={styles.container}
-            onPress={() => onPress(order.id)}
-            activeOpacity={0.7}
-        >
-            <View style={styles.header}>
-                <View>
-                    <Text style={styles.orderId}>{order.id}</Text>
-                    <Text style={styles.timestamp}>{formatDate(order.createdAt)}</Text>
-                </View>
-                <View style={styles.tableInfo}>
-                    <Text style={styles.tableNumber}>T{order.tableNumber}</Text>
-                    <View style={styles.guestInfo}>
-                        <Users size={14} color={colors.textLight} />
-                        <Text style={styles.guestCount}>{order.guestCount}</Text>
+        <>
+            <TouchableOpacity
+                style={styles.container}
+                onPress={() => setModalVisible(true)}
+                activeOpacity={0.7}
+            >
+                <View style={styles.header}>
+                    <View>
+                        <Text style={styles.orderId}>{order.id}</Text>
+                        <Text style={styles.timestamp}>{formatDate(order.createdAt)}</Text>
                     </View>
-                </View>
-            </View>
-
-            <View style={styles.content}>
-                <View style={styles.infoRow}>
-                    <View style={styles.infoItem}>
-                        <ShoppingBag size={16} color={colors.textLight} />
-                        <Text style={styles.infoText}>{order.items.length} items</Text>
-                    </View>
-                    <View style={styles.infoItem}>
-                        <DollarSign size={16} color={colors.textLight} />
-                        <Text style={styles.infoText}>{formatCurrency(order.total)}</Text>
+                    <View style={styles.tableInfo}>
+                        <Text style={styles.tableNumber}>T{order.tableNumber}</Text>
+                        <View style={styles.guestInfo}>
+                            <Users size={14} color={colors.textLight} />
+                            <Text style={styles.guestCount}>{order.guestCount}</Text>
+                        </View>
                     </View>
                 </View>
 
-                <View style={styles.progressContainer}>
-                    <View style={styles.progressBackground}>
-                        <View
-                            style={[
-                                styles.progressFill,
-                                { width: getProgressPercentage() }
-                            ]}
-                        />
+                <View style={styles.content}>
+                    <View style={styles.infoRow}>
+                        <View style={styles.infoItem}>
+                            <ShoppingBag size={16} color={colors.textLight} />
+                            <Text style={styles.infoText}>{order.items.length} items</Text>
+                        </View>
+                        <View style={styles.infoItem}>
+                            <DollarSign size={16} color={colors.textLight} />
+                            <Text style={styles.infoText}>{formatCurrency(order.total)}</Text>
+                        </View>
                     </View>
-                    <View style={styles.statusLabels}>
-                        <Text style={[
-                            styles.statusLabel,
-                            order.status === 'preparing' && styles.activeStatus
-                        ]}>
-                            Preparing
-                        </Text>
-                        <Text style={[
-                            styles.statusLabel,
-                            order.status === 'serving' && styles.activeStatus
-                        ]}>
-                            Serving
-                        </Text>
-                        <Text style={[
-                            styles.statusLabel,
-                            order.status === 'completed' && styles.activeStatus
-                        ]}>
-                            Completed
-                        </Text>
+
+                    <View style={styles.progressContainer}>
+                        <View style={styles.progressBackground}>
+                            <View
+                                style={[
+                                    styles.progressFill,
+                                    { width: getProgressPercentage() }
+                                ]}
+                            />
+                        </View>
+                        <View style={styles.statusLabels}>
+                            <Text style={[
+                                styles.statusLabel,
+                                order.status === 'preparing' && styles.activeStatus
+                            ]}>
+                                Preparing
+                            </Text>
+                            <Text style={[
+                                styles.statusLabel,
+                                order.status === 'serving' && styles.activeStatus
+                            ]}>
+                                Serving
+                            </Text>
+                            <Text style={[
+                                styles.statusLabel,
+                                order.status === 'completed' && styles.activeStatus
+                            ]}>
+                                Completed
+                            </Text>
+                        </View>
                     </View>
                 </View>
-            </View>
 
-            <View style={styles.actions}>
-                <TouchableOpacity style={styles.actionButton}>
-                    <Edit size={18} color={colors.primary} />
-                    <Text style={styles.actionText}>Modify</Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity style={styles.actionButton}>
-                    <Printer size={18} color={colors.primary} />
-                    <Text style={styles.actionText}>Print</Text>
-                </TouchableOpacity>
-
-                {order.status !== 'completed' && (
-                    <TouchableOpacity
-                        style={[styles.actionButton, styles.completeButton]}
-                        onPress={handleStatusChange}
-                    >
-                        <Check size={18} color="#fff" />
-                        <Text style={styles.completeText}>
-                            {order.status === 'preparing' ? 'Serve' : 'Complete'}
-                        </Text>
+                <View style={styles.actions}>
+                    <TouchableOpacity style={styles.actionButton} onPress={() => setModModalVisible(true)}>
+                        <Edit size={18} color={colors.primary} />
+                        <Text style={styles.actionText}>Modify</Text>
                     </TouchableOpacity>
-                )}
-            </View>
-        </TouchableOpacity>
+
+                    {order.status === 'completed' && (
+                        <TouchableOpacity style={styles.actionButton}>
+                            <Printer size={18} color={colors.primary} />
+                            <Text style={styles.actionText}>Print</Text>
+                        </TouchableOpacity>
+                    )}
+
+                    {order.status !== 'completed' && (
+                        <TouchableOpacity
+                            style={[styles.actionButton, styles.completeButton]}
+                            onPress={handleStatusChange}
+                        >
+                            <Check size={18} color="#fff" />
+                            <Text style={styles.completeText}>
+                                {order.status === 'preparing' ? 'Serve' : 'Complete'}
+                            </Text>
+                        </TouchableOpacity>
+                    )}
+                </View>
+            </TouchableOpacity>
+            <OrderDetailModal
+                visible={modalVisible}
+                onClose={() => setModalVisible(false)}
+                order={orderState}
+            />
+            <OrderModificationModal
+                visible={modModalVisible}
+                onClose={() => setModModalVisible(false)}
+                order={orderState}
+                onChangeStatus={handleChangeStatus}
+                onCancelOrder={handleCancelOrder}
+                onCancelItem={handleCancelItem}
+                showStatusChangeOption={true}
+            />
+        </>
     );
 };
 

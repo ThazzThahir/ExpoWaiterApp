@@ -12,7 +12,7 @@ interface TableState {
 }
 
 // Mock data
-const MOCK_TABLES: Table[] = Array.from({ length: 16 }, (_, i) => {
+const MOCK_TABLES: Table[] = Array.from({ length: 30 }, (_, i) => {
     const id = (i + 1).toString();
     const number = i + 1;
 

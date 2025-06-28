@@ -50,26 +50,38 @@ export const TableCard: React.FC<TableCardProps> = ({ table, onPress }) => {
             </View>
 
             <View style={styles.content}>
-                {table.status !== 'vacant' && (
-                    <View style={styles.infoRow}>
-                        <Users size={16} color={colors.textLight} />
-                        <Text style={styles.infoText}>{table.guestCount} guests</Text>
-                    </View>
-                )}
-
-                {table.status === 'occupied' && table.occupiedSince && (
-                    <View style={styles.infoRow}>
-                        <Clock size={16} color={colors.textLight} />
-                        <Text style={styles.infoText}>{formatDuration(table.occupiedSince)}</Text>
-                    </View>
-                )}
-
-                {table.status === 'reserved' && table.reservedFor && (
-                    <View style={styles.infoRow}>
-                        <Clock size={16} color={colors.textLight} />
-                        <Text style={styles.infoText}>{new Date(table.reservedFor).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</Text>
-                    </View>
-                )}
+                {/* Always render info rows to keep height consistent */}
+                <View style={styles.infoRow}>
+                    {table.status !== 'vacant' ? (
+                        <>
+                            <Users size={16} color={colors.textLight} />
+                            <Text style={styles.infoText}>{table.guestCount} guests</Text>
+                        </>
+                    ) : (
+                        <>
+                            <Users size={16} color={'transparent'} />
+                            <Text style={[styles.infoText, { color: 'transparent' }]}>0 guests</Text>
+                        </>
+                    )}
+                </View>
+                <View style={styles.infoRow}>
+                    {table.status === 'occupied' && table.occupiedSince ? (
+                        <>
+                            <Clock size={16} color={colors.textLight} />
+                            <Text style={styles.infoText}>{formatDuration(table.occupiedSince)}</Text>
+                        </>
+                    ) : table.status === 'reserved' && table.reservedFor ? (
+                        <>
+                            <Clock size={16} color={colors.textLight} />
+                            <Text style={styles.infoText}>{new Date(table.reservedFor).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</Text>
+                        </>
+                    ) : (
+                        <>
+                            <Clock size={16} color={'transparent'} />
+                            <Text style={[styles.infoText, { color: 'transparent' }]}>--</Text>
+                        </>
+                    )}
+                </View>
             </View>
         </TouchableOpacity>
     );
