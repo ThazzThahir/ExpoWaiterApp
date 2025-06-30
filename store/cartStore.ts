@@ -9,7 +9,7 @@ interface CartState {
     removeFromCart: (cartItemId: string) => void;
     updateQuantity: (cartItemId: string, quantity: number) => void;
     clearCart: () => void;
-    setTableInfo: (tableId: string, tableNumber: number) => void;
+    setTableInfo: (tableId: string, tableNumber: number, guestName: string, guestCount: number) => void;
     getItemCount: () => number;
 }
 
@@ -21,7 +21,14 @@ const initialCart: Cart = {
 export const useCartStore = create<CartState>()(
     persist(
         (set, get) => ({
-            cart: initialCart,
+            cart: {
+                items: [],
+                totalAmount: 0,
+                tableId: undefined,
+                tableNumber: undefined,
+                guestName: undefined,
+                guestCount: undefined,
+            },
 
             addToCart: (menuItem, quantity, modifiers, specialInstructions) => {
                 set((state) => {
@@ -109,12 +116,14 @@ export const useCartStore = create<CartState>()(
                 });
             },
 
-            setTableInfo: (tableId, tableNumber) => {
+            setTableInfo: (tableId, tableNumber, guestName, guestCount) => {
                 set((state) => ({
                     cart: {
                         ...state.cart,
                         tableId,
                         tableNumber,
+                        guestName,
+                        guestCount,
                     }
                 }));
             },

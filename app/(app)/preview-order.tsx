@@ -76,8 +76,8 @@ export default function PreviewOrderScreen() {
             return;
         }
 
-        if (!cart.tableId) {
-            Alert.alert("Table Required", "Please select a table for this order.");
+        if (!cart.tableId || !cart.guestName || !cart.guestCount) {
+            Alert.alert("Missing Information", "Please select a table and provide guest information.");
             return;
         }
 
@@ -98,7 +98,6 @@ export default function PreviewOrderScreen() {
         setTimeout(() => {
             setIsSubmitting(false);
 
-            // In a real app, you would create an order in the database
             Alert.alert(
                 "Order Confirmed",
                 "Your order has been sent to the kitchen!",
@@ -171,7 +170,28 @@ export default function PreviewOrderScreen() {
                                         <View style={styles.summaryValue}>
                                             <Users size={16} color={colors.textLight} style={styles.summaryIcon} />
                                             <Text style={styles.summaryValueText}>
-                                                {cart.tableNumber ? "4" : "?"} Guests
+                                                {cart.guestCount || "?"} Guests
+                                            </Text>
+                                        </View>
+                                    </View>
+                                </View>
+
+                                <View style={styles.summaryRow}>
+                                    <View style={styles.summaryItem}>
+                                        <Text style={styles.summaryLabel}>Guest Name</Text>
+                                        <View style={styles.summaryValue}>
+                                            <Text style={styles.summaryValueText}>
+                                                {cart.guestName || "?"}
+                                            </Text>
+                                        </View>
+                                    </View>
+
+                                    <View style={styles.summaryItem}>
+                                        <Text style={styles.summaryLabel}>Time</Text>
+                                        <View style={styles.summaryValue}>
+                                            <Clock size={16} color={colors.textLight} style={styles.summaryIcon} />
+                                            <Text style={styles.summaryValueText}>
+                                                {new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                             </Text>
                                         </View>
                                     </View>
@@ -183,16 +203,6 @@ export default function PreviewOrderScreen() {
                                         <View style={styles.summaryValue}>
                                             <Text style={styles.summaryValueText}>
                                                 #{newOrderId}
-                                            </Text>
-                                        </View>
-                                    </View>
-
-                                    <View style={styles.summaryItem}>
-                                        <Text style={styles.summaryLabel}>Time</Text>
-                                        <View style={styles.summaryValue}>
-                                            <Clock size={16} color={colors.textLight} style={styles.summaryIcon} />
-                                            <Text style={styles.summaryValueText}>
-                                                {new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                             </Text>
                                         </View>
                                     </View>

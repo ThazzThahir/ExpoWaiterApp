@@ -43,5 +43,7 @@ export interface Cart {
     items: CartItem[];
     tableId?: string;
     tableNumber?: number;
+    guestName?: string;
+    guestCount?: number;
     totalAmount: number;
 }

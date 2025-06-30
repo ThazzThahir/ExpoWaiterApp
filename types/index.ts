@@ -22,6 +22,7 @@ export interface Order {
     id: string;
     tableId: string;
     tableNumber: number;
+    guestName: string;
     guestCount: number;
     items: OrderItem[];
     status: OrderStatus;

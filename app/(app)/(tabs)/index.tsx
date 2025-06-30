@@ -34,11 +34,12 @@ export default function TablesScreen() {
     const [refreshing, setRefreshing] = useState(false);
     const [activeFilter, setActiveFilter] = useState<TableStatus | null>(null);
 
-    // Modal state for vacant table order creation
+    // Modal state for order creation
     const [showCreateOrderModal, setShowCreateOrderModal] = useState(false);
     const [modalTable, setModalTable] = useState<Table | null>(null);
     const [guestName, setGuestName] = useState('');
     const [guestCount, setGuestCount] = useState('1');
+
     // Modal state for occupied table details
     const [showOrderDetailsModal, setShowOrderDetailsModal] = useState(false);
     const [orderTable, setOrderTable] = useState<Table | null>(null);
@@ -59,23 +60,34 @@ export default function TablesScreen() {
         if (Platform.OS !== 'web') {
             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
         }
-        if (table.status === 'vacant') {
-            setModalTable(table);
-            setGuestName('');
-            setGuestCount('1');
-            setShowCreateOrderModal(true);
-        } else if (table.status === 'occupied') {
-            setOrderTable(table);
-            setShowOrderDetailsModal(true);
-        }
+
+        // For both vacant and occupied tables, show create order modal
+        setModalTable(table);
+        setGuestName('');
+        setGuestCount('1');
+        setShowCreateOrderModal(true);
     };
 
     // Handle create order submit for vacant table
     const handleCreateOrderSubmit = () => {
-        if (!modalTable) return;
-        setTableInfo(modalTable.id, modalTable.number);
-        // Optionally: update table status to occupied here
-        // updateTableStatus(modalTable.id, 'occupied', Number(guestCount));
+        if (!modalTable || !guestName.trim() || !guestCount.trim()) {
+            Alert.alert("Required Fields", "Please enter guest name and number of guests.");
+            return;
+        }
+
+        const numGuests = parseInt(guestCount, 10);
+        if (isNaN(numGuests) || numGuests < 1) {
+            Alert.alert("Invalid Input", "Please enter a valid number of guests.");
+            return;
+        }
+
+        setTableInfo(modalTable.id, modalTable.number, guestName, numGuests);
+
+        // Update table status to occupied with guest count
+        if (modalTable.status === 'vacant') {
+            updateTableStatus(modalTable.id, 'occupied', numGuests);
+        }
+
         setShowCreateOrderModal(false);
         router.push('/(app)/(tabs)/menu');
     };
@@ -83,9 +95,11 @@ export default function TablesScreen() {
     // Handle create additional order for occupied table
     const handleCreateAdditionalOrder = () => {
         if (!orderTable) return;
-        setTableInfo(orderTable.id, orderTable.number);
+        setModalTable(orderTable);
+        setGuestName('');
+        setGuestCount('1');
         setShowOrderDetailsModal(false);
-        router.push('/(app)/(tabs)/menu');
+        setShowCreateOrderModal(true);
     };
 
     const handleFilterPress = (status: TableStatus | null) => {
@@ -189,7 +203,7 @@ export default function TablesScreen() {
                     }
                 />
             )}
-            {/* Modal for Create Order (Vacant Table) */}
+            {/* Modal for Create Order (Both Vacant and Occupied Tables) */}
             <Modal
                 visible={showCreateOrderModal}
                 animationType="slide"
@@ -198,7 +212,11 @@ export default function TablesScreen() {
             >
                 <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0,0,0,0.3)' }}>
                     <View style={{ backgroundColor: '#fff', padding: 24, borderRadius: 12, width: '80%' }}>
-                        <Text style={{ fontWeight: 'bold', fontSize: 18, marginBottom: 12 }}>Create Order</Text>
+                        <Text style={{ fontWeight: 'bold', fontSize: 18, marginBottom: 12 }}>
+                            {modalTable?.status === 'vacant' ? 'Create Order' : 'Create Additional Order'}
+                        </Text>
+                        <Text style={{ fontSize: 16, marginBottom: 16 }}>Table {modalTable?.number}</Text>
+
                         <TextInput
                             placeholder="Guest Name"
                             value={guestName}
@@ -212,10 +230,14 @@ export default function TablesScreen() {
                             keyboardType="numeric"
                             style={{ borderWidth: 1, borderColor: colors.border, borderRadius: 8, padding: 8, marginBottom: 12 }}
                         />
+
                         <View style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
                             <Button title="Cancel" onPress={() => setShowCreateOrderModal(false)} />
                             <View style={{ width: 12 }} />
-                            <Button title="Create Order" onPress={handleCreateOrderSubmit} />
+                            <Button
+                                title="Create Order"
+                                onPress={handleCreateOrderSubmit}
+                            />
                         </View>
                     </View>
                 </View>

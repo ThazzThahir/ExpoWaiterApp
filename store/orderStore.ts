@@ -12,6 +12,7 @@ interface OrderState {
     updateOrderStatus: (id: string, status: OrderStatus) => void;
     getOrderById: (id: string) => Order | undefined;
     getOrdersByTableId: (tableId: string) => Order[];
+    createOrder: (items: any[], tableId: string, tableNumber: number, guestName: string, guestCount: number, total: number) => void;
 }
 
 // Generate random mock orders
@@ -62,10 +63,15 @@ const generateMockOrders = (): Order[] => {
         const createdAt = new Date(Date.now() - Math.floor(Math.random() * 24 * 60 * 60 * 1000)).toISOString();
         const updatedAt = new Date(new Date(createdAt).getTime() + Math.floor(Math.random() * 60 * 60 * 1000)).toISOString();
 
+        // Generate a random guest name
+        const guestNames = ['Alice', 'Bob', 'Charlie', 'Diana', 'Eve', 'Frank', 'Grace', 'Hannah', 'Ivan', 'Julia'];
+        const guestName = guestNames[Math.floor(Math.random() * guestNames.length)];
+
         return {
             id,
             tableId,
             tableNumber,
+            guestName,
             guestCount,
             items,
             status,
@@ -131,5 +137,32 @@ export const useOrderStore = create<OrderState>((set, get) => ({
 
     getOrdersByTableId: (tableId) => {
         return get().orders.filter(order => order.tableId === tableId);
+    },
+
+    createOrder: (items, tableId, tableNumber, guestName, guestCount, total) => {
+        const newOrder: Order = {
+            id: `ORD-${Date.now()}`,
+            tableId,
+            tableNumber,
+            guestName,
+            guestCount,
+            items: items.map(item => ({
+                id: item.id,
+                name: item.menuItem.name,
+                quantity: item.quantity,
+                price: item.totalPrice,
+                notes: item.specialInstructions
+            })),
+            status: 'preparing',
+            total,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+        };
+
+        set(state => ({
+            orders: [newOrder, ...state.orders]
+        }));
+
+        return newOrder;
     },
 }));
