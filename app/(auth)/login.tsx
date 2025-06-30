@@ -45,7 +45,7 @@ export default function LoginScreen() {
                             }}
                             style={styles.logoBackground}
                         />
-                        <Text style={styles.logoText}>TableServe</Text>
+                        <Text style={styles.logoText}>Waiter App</Text>
                     </View>
 
                     <View style={styles.formContainer}>

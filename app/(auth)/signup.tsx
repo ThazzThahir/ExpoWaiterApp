@@ -122,7 +122,7 @@ export default function SignupScreen() {
                     >
                         <ScrollView contentContainerStyle={styles.scrollContent}>
                             <View style={styles.formContainer}>
-                                <Text style={styles.welcomeText}>Join TableServe</Text>
+                                <Text style={styles.welcomeText}>Join Waiter App</Text>
                                 <Text style={styles.subtitleText}>Create your account</Text>
 
                                 <View style={styles.form}>

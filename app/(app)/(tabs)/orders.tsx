@@ -9,7 +9,6 @@ import {
     RefreshControl,
 } from 'react-native';
 import { useRouter } from 'expo-router';
-import { Plus } from 'lucide-react-native';
 import { OrderCard } from '@/components/orders/OrderCard';
 import { useOrderStore } from '@/store/orderStore';
 import { colors } from '@/constants/colors';
@@ -123,11 +122,11 @@ export default function OrdersScreen() {
                 />
             )}
 
-            {activeTab === 'active' && (
+            {/* {activeTab === 'active' && (
                 <TouchableOpacity style={styles.fab}>
                     <Plus size={24} color="#fff" />
                 </TouchableOpacity>
-            )}
+            )} */}
         </View>
     );
 }
