@@ -42,13 +42,7 @@ export default function TabsLayout() {
                     tabBarIcon: ({ color, size }) => <ShoppingBag size={size} color={color} />,
                 }}
             />
-            <Tabs.Screen
-                name="settings"
-                options={{
-                    title: "Settings",
-                    tabBarIcon: ({ color, size }) => <Settings size={size} color={color} />,
-                }}
-            />
+            
         </Tabs>
     );
 }

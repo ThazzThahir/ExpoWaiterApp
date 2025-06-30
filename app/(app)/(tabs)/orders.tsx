@@ -21,12 +21,10 @@ export default function OrdersScreen() {
         isLoading,
         fetchOrders,
         getActiveOrders,
-        getCompletedOrders,
         updateOrderStatus
     } = useOrderStore();
 
     const [refreshing, setRefreshing] = useState(false);
-    const [activeTab, setActiveTab] = useState<'active' | 'completed'>('active');
 
     useEffect(() => {
         fetchOrders();
@@ -48,46 +46,13 @@ export default function OrdersScreen() {
         updateOrderStatus(orderId, status);
     };
 
-    const displayedOrders = activeTab === 'active'
-        ? getActiveOrders()
-        : getCompletedOrders();
+    const displayedOrders = getActiveOrders();
 
     return (
         <View style={styles.container}>
             <View style={styles.header}>
                 <Text style={styles.title}>Orders</Text>
-                <View style={styles.tabs}>
-                    <TouchableOpacity
-                        style={[
-                            styles.tab,
-                            activeTab === 'active' && styles.activeTab
-                        ]}
-                        onPress={() => setActiveTab('active')}
-                    >
-                        <Text style={[
-                            styles.tabText,
-                            activeTab === 'active' && styles.activeTabText
-                        ]}>
-                            Active Orders
-                        </Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                        style={[
-                            styles.tab,
-                            activeTab === 'completed' && styles.activeTab
-                        ]}
-                        onPress={() => setActiveTab('completed')}
-                    >
-                        <Text style={[
-                            styles.tabText,
-                            activeTab === 'completed' && styles.activeTabText
-                        ]}>
-                            Completed Orders
-                        </Text>
-                    </TouchableOpacity>
-                </View>
             </View>
-
             {isLoading && !refreshing ? (
                 <View style={styles.loadingContainer}>
                     <ActivityIndicator size="large" color={colors.primary} />
@@ -115,18 +80,12 @@ export default function OrdersScreen() {
                     ListEmptyComponent={
                         <View style={styles.emptyContainer}>
                             <Text style={styles.emptyText}>
-                                No {activeTab} orders found
+                                No active orders found
                             </Text>
                         </View>
                     }
                 />
             )}
-
-            {/* {activeTab === 'active' && (
-                <TouchableOpacity style={styles.fab}>
-                    <Plus size={24} color="#fff" />
-                </TouchableOpacity>
-            )} */}
         </View>
     );
 }
@@ -150,27 +109,6 @@ const styles = StyleSheet.create({
         color: colors.text,
         marginBottom: 12,
     },
-    tabs: {
-        flexDirection: 'row',
-        marginBottom: 0,
-    },
-    tab: {
-        flex: 1,
-        paddingVertical: 12,
-        alignItems: 'center',
-    },
-    activeTab: {
-        borderBottomWidth: 2,
-        borderBottomColor: colors.primary,
-    },
-    tabText: {
-        fontSize: 14,
-        fontWeight: '500',
-        color: colors.textLight,
-    },
-    activeTabText: {
-        color: colors.primary,
-    },
     ordersList: {
         padding: 16,
     },
@@ -186,21 +124,5 @@ const styles = StyleSheet.create({
     emptyText: {
         color: colors.textLight,
         fontSize: 16,
-    },
-    fab: {
-        position: 'absolute',
-        bottom: 20,
-        right: 20,
-        width: 56,
-        height: 56,
-        borderRadius: 28,
-        backgroundColor: colors.primary,
-        justifyContent: 'center',
-        alignItems: 'center',
-        elevation: 4,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.25,
-        shadowRadius: 3.84,
     },
 });

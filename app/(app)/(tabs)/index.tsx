@@ -9,24 +9,39 @@ import {
     RefreshControl,
     Alert,
     Platform,
+    Modal,
+    TextInput,
+    Button,
+    ScrollView
 } from 'react-native';
 import { useRouter } from 'expo-router';
-import { Filter } from 'lucide-react-native';
+import { Filter, Settings } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
 import { TableCard } from '@/components/tables/TableCard';
 import { useTableStore } from '@/store/tableStore';
 import { useCartStore } from '@/store/cartStore';
 import { useAuthStore } from '@/store/authStore';
+import { useOrderStore } from '@/store/orderStore';
 import { colors } from '@/constants/colors';
-import { TableStatus } from '@/types';
+import { Table, Order, TableStatus } from '@/types';
 
 export default function TablesScreen() {
     const router = useRouter();
     const { tables, isLoading, fetchTables, filterTables, updateTableStatus } = useTableStore();
     const { setTableInfo } = useCartStore();
     const { user } = useAuthStore();
+    const { getOrdersByTableId } = useOrderStore();
     const [refreshing, setRefreshing] = useState(false);
     const [activeFilter, setActiveFilter] = useState<TableStatus | null>(null);
+
+    // Modal state for vacant table order creation
+    const [showCreateOrderModal, setShowCreateOrderModal] = useState(false);
+    const [modalTable, setModalTable] = useState<Table | null>(null);
+    const [guestName, setGuestName] = useState('');
+    const [guestCount, setGuestCount] = useState('1');
+    // Modal state for occupied table details
+    const [showOrderDetailsModal, setShowOrderDetailsModal] = useState(false);
+    const [orderTable, setOrderTable] = useState<Table | null>(null);
 
     useEffect(() => {
         fetchTables();
@@ -41,52 +56,36 @@ export default function TablesScreen() {
     const handleTablePress = (tableId: string) => {
         const table = tables.find(t => t.id === tableId);
         if (!table) return;
-
         if (Platform.OS !== 'web') {
             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
         }
-
-        // Show options based on table status
-        const options = [];
-
         if (table.status === 'vacant') {
-            options.push({
-                text: 'Create Order',
-                onPress: () => {
-                    setTableInfo(tableId, table.number);
-                    router.push('/(app)/(tabs)/menu');
-                }
-            });
-            options.push({
-                text: 'Cancel',
-                style: 'cancel' as const
-            });
+            setModalTable(table);
+            setGuestName('');
+            setGuestCount('1');
+            setShowCreateOrderModal(true);
         } else if (table.status === 'occupied') {
-            options.push({
-                text: 'Free Table',
-                onPress: () => {
-                    updateTableStatus(tableId, 'vacant');
-                    Alert.alert('Success', `Table ${table.number} has been freed.`);
-                }
-            });
-            options.push({
-                text: 'Create Order',
-                onPress: () => {
-                    setTableInfo(tableId, table.number);
-                    router.push('/(app)/(tabs)/menu');
-                }
-            });
-            options.push({
-                text: 'Cancel',
-                style: 'cancel' as const
-            });
+            setOrderTable(table);
+            setShowOrderDetailsModal(true);
         }
+    };
 
-        Alert.alert(
-            `Table ${table.number}`,
-            `Status: ${table.status.charAt(0).toUpperCase() + table.status.slice(1)}`,
-            options
-        );
+    // Handle create order submit for vacant table
+    const handleCreateOrderSubmit = () => {
+        if (!modalTable) return;
+        setTableInfo(modalTable.id, modalTable.number);
+        // Optionally: update table status to occupied here
+        // updateTableStatus(modalTable.id, 'occupied', Number(guestCount));
+        setShowCreateOrderModal(false);
+        router.push('/(app)/(tabs)/menu');
+    };
+
+    // Handle create additional order for occupied table
+    const handleCreateAdditionalOrder = () => {
+        if (!orderTable) return;
+        setTableInfo(orderTable.id, orderTable.number);
+        setShowOrderDetailsModal(false);
+        router.push('/(app)/(tabs)/menu');
     };
 
     const handleFilterPress = (status: TableStatus | null) => {
@@ -132,9 +131,15 @@ export default function TablesScreen() {
 
     return (
         <View style={styles.container}>
-            {/* Restaurant Name at the top */}
+            {/* Restaurant Name and Settings Icon at the top */}
             <View style={styles.restaurantHeader}>
                 <Text style={styles.restaurantName}>UR’s Dine & Serve</Text>
+                <TouchableOpacity
+                    style={styles.settingsButton}
+                    onPress={() => router.push('/(app)/(tabs)/settings')}
+                >
+                    <Settings size={23} color="grey" />
+                </TouchableOpacity>
             </View>
             <View style={styles.headerRow}>
                 <View style={styles.filterContainer}>
@@ -184,6 +189,74 @@ export default function TablesScreen() {
                     }
                 />
             )}
+            {/* Modal for Create Order (Vacant Table) */}
+            <Modal
+                visible={showCreateOrderModal}
+                animationType="slide"
+                transparent={true}
+                onRequestClose={() => setShowCreateOrderModal(false)}
+            >
+                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0,0,0,0.3)' }}>
+                    <View style={{ backgroundColor: '#fff', padding: 24, borderRadius: 12, width: '80%' }}>
+                        <Text style={{ fontWeight: 'bold', fontSize: 18, marginBottom: 12 }}>Create Order</Text>
+                        <TextInput
+                            placeholder="Guest Name"
+                            value={guestName}
+                            onChangeText={setGuestName}
+                            style={{ borderWidth: 1, borderColor: colors.border, borderRadius: 8, padding: 8, marginBottom: 12 }}
+                        />
+                        <TextInput
+                            placeholder="Number of Guests"
+                            value={guestCount}
+                            onChangeText={setGuestCount}
+                            keyboardType="numeric"
+                            style={{ borderWidth: 1, borderColor: colors.border, borderRadius: 8, padding: 8, marginBottom: 12 }}
+                        />
+                        <View style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
+                            <Button title="Cancel" onPress={() => setShowCreateOrderModal(false)} />
+                            <View style={{ width: 12 }} />
+                            <Button title="Create Order" onPress={handleCreateOrderSubmit} />
+                        </View>
+                    </View>
+                </View>
+            </Modal>
+            {/* Modal for Order Details (Occupied Table) */}
+            <Modal
+                visible={showOrderDetailsModal}
+                animationType="slide"
+                transparent={true}
+                onRequestClose={() => setShowOrderDetailsModal(false)}
+            >
+                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0,0,0,0.3)' }}>
+                    <View style={{ backgroundColor: '#fff', padding: 24, borderRadius: 12, width: '90%', maxHeight: '80%' }}>
+                        <Text style={{ fontWeight: 'bold', fontSize: 18, marginBottom: 12 }}>Table {orderTable?.number} - Orders</Text>
+                        <ScrollView style={{ maxHeight: 250 }}>
+                            {/* Show order details for this table */}
+                            {orderTable && getOrdersByTableId(orderTable.id).length > 0 ? (
+                                getOrdersByTableId(orderTable.id).map((order: Order, idx: number) => (
+                                    <View key={order.id} style={{ marginBottom: 12, borderBottomWidth: 1, borderColor: colors.border, paddingBottom: 8 }}>
+                                        <Text style={{ fontWeight: 'bold' }}>Order #{order.id}</Text>
+                                        <Text>Status: {order.status}</Text>
+                                        {/* Add more order details as needed */}
+                                    </View>
+                                ))
+                            ) : (
+                                <Text>No orders found for this table.</Text>
+                            )}
+                        </ScrollView>
+                        <View style={{ flexDirection: 'row', justifyContent: 'flex-end', marginTop: 12 }}>
+                            <Button title="View Orders" onPress={() => {
+                                setShowOrderDetailsModal(false);
+                                router.push('/(app)/(tabs)/orders');
+                            }} />
+                            <View style={{ width: 8 }} />
+                            <Button title="Create Order" onPress={handleCreateAdditionalOrder} />
+                            <View style={{ width: 8 }} />
+                            <Button title="Cancel" onPress={() => setShowOrderDetailsModal(false)} />
+                        </View>
+                    </View>
+                </View>
+            </Modal>
         </View>
     );
 }
@@ -195,17 +268,24 @@ const styles = StyleSheet.create({
     },
     restaurantHeader: {
         paddingTop: 10,
-        // paddingBottom: 8,
         backgroundColor: colors.card,
         alignItems: 'center',
-        // borderBottomWidth: 1,
-        // borderBottomColor: colors.border,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
     },
     restaurantName: {
         fontSize: 22,
         fontWeight: 'bold',
         color: colors.primaryDark,
         letterSpacing: 1,
+        marginLeft: 85,
+    },
+    settingsButton: {
+        padding: 8,
+        position: 'absolute',
+        right: 12,
+        top: 5,
+        zIndex: 10,
     },
     headerRow: {
         flexDirection: 'row',
@@ -225,8 +305,8 @@ const styles = StyleSheet.create({
     waiterNameContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-        marginLeft: 8,  
-        marginTop : 6,      // add margin to bring closer to filter
+        marginLeft: 8,
+        marginTop: 6,      // add margin to bring closer to filter
         flexShrink: 0,
     },
     waiterNameLabel: {
@@ -245,7 +325,7 @@ const styles = StyleSheet.create({
     filterContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-        marginTop : 6,
+        marginTop: 6,
         flexShrink: 1,
     },
     filterIcon: {

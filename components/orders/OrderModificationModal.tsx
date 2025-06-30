@@ -24,103 +24,22 @@ export const OrderModificationModal: React.FC<OrderModificationModalProps> = ({
 }) => {
     if (!order) return null;
 
-    const statusOptions: OrderStatus[] = ['preparing', 'serving', 'completed'];
-
-    const handleStatusChangeWithConfirmation = (status: OrderStatus) => {
-        if (status === 'completed') {
-            Alert.alert(
-                'Confirm Completion',
-                'Are you sure you want to mark this order as Completed?',
-                [
-                    { text: 'Cancel', style: 'cancel' },
-                    { text: 'Yes, Complete Order', style: 'destructive', onPress: () => onChangeStatus(status) },
-                ]
-            );
-        } else if ((status === 'serving' || status === 'preparing') && order.status === 'completed') {
-            Alert.alert(
-                'Move to Active Orders',
-                'Are you sure you want to move this order to Active Orders?',
-                [
-                    { text: 'Cancel', style: 'cancel' },
-                    { text: 'Yes, Move to Active Orders', style: 'default', onPress: () => onChangeStatus(status) },
-                ]
-            );
-        } else if (status === 'serving') {
-            Alert.alert(
-                'Confirm Serving',
-                'Are you sure you want to mark this order as Serving?',
-                [
-                    { text: 'Cancel', style: 'cancel' },
-                    { text: 'Yes, Mark as Serving', style: 'default', onPress: () => onChangeStatus(status) },
-                ]
-            );
-        } else if (status === 'preparing' && order.status !== 'preparing') {
-            Alert.alert(
-                'Confirm Preparing',
-                'Are you sure you want to mark this order as Preparing?',
-                [
-                    { text: 'Cancel', style: 'cancel' },
-                    { text: 'Yes, Mark as Preparing', style: 'default', onPress: () => onChangeStatus(status) },
-                ]
-            );
-        } else {
-            onChangeStatus(status);
-        }
-    };
-
     return (
         <Modal visible={visible} animationType="slide" transparent>
             <View style={styles.overlay}>
                 <View style={styles.modal}>
                     <Text style={styles.title}>Modify Order</Text>
                     <ScrollView>
-                        {showStatusChangeOption && (
-                            <>
-                                <Text style={styles.sectionTitle}>Change Status</Text>
-                                <View style={styles.statusRow}>
-                                    {statusOptions.map((status) => (
-                                        <TouchableOpacity
-                                            key={status}
-                                            style={[
-                                                styles.statusButton,
-                                                order.status === status && styles.statusButtonActive,
-                                            ]}
-                                            onPress={() => handleStatusChangeWithConfirmation(status)}
-                                        >
-                                            <Text style={order.status === status ? styles.statusTextActive : styles.statusText}>
-                                                {status.charAt(0).toUpperCase() + status.slice(1)}
-                                            </Text>
-                                        </TouchableOpacity>
-                                    ))}
-                                </View>
-                            </>
-                        )}
-
                         <Text style={styles.sectionTitle}>Order Items</Text>
                         {order.items.map((item) => (
                             <View key={item.id} style={styles.itemRow}>
-                                <Text style={styles.itemName}>{item.name} x{item.quantity}</Text>
-                                <TouchableOpacity
-                                    style={styles.cancelItemButton}
-                                    onPress={() => {
-                                        Alert.alert('Cancel Item', `Remove ${item.name} from order?`, [
-                                            { text: 'No', style: 'cancel' },
-                                            { text: 'Yes', style: 'destructive', onPress: () => onCancelItem(item.id) },
-                                        ]);
-                                    }}
-                                >
-                                    <Text style={styles.cancelItemText}>Cancel Item</Text>
+                                <Text style={styles.itemName}>{item.name}</Text>
+                                <TouchableOpacity onPress={() => onCancelItem(item.id)}>
+                                    <Text style={styles.cancelItem}>Cancel</Text>
                                 </TouchableOpacity>
                             </View>
                         ))}
-
-                        <Text style={styles.sectionTitle}>Other Actions</Text>
-                        <TouchableOpacity style={styles.cancelOrderButton} onPress={() => {
-                            Alert.alert('Cancel Order', 'Are you sure you want to cancel this order?', [
-                                { text: 'No', style: 'cancel' },
-                                { text: 'Yes', style: 'destructive', onPress: onCancelOrder },
-                            ]);
-                        }}>
+                        <TouchableOpacity style={styles.cancelOrderButton} onPress={onCancelOrder}>
                             <Text style={styles.cancelOrderText}>Cancel Order</Text>
                         </TouchableOpacity>
                     </ScrollView>
@@ -160,27 +79,6 @@ const styles = StyleSheet.create({
         marginBottom: 6,
         color: colors.text,
     },
-    statusRow: {
-        flexDirection: 'row',
-        marginBottom: 12,
-    },
-    statusButton: {
-        backgroundColor: colors.border,
-        borderRadius: 8,
-        padding: 10,
-        marginRight: 8,
-    },
-    statusButtonActive: {
-        backgroundColor: colors.primary,
-    },
-    statusText: {
-        color: colors.text,
-        fontWeight: 'bold',
-    },
-    statusTextActive: {
-        color: '#fff',
-        fontWeight: 'bold',
-    },
     itemRow: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -192,13 +90,7 @@ const styles = StyleSheet.create({
         fontSize: 15,
         color: colors.text,
     },
-    cancelItemButton: {
-        backgroundColor: colors.border,
-        borderRadius: 8,
-        padding: 6,
-        marginLeft: 8,
-    },
-    cancelItemText: {
+    cancelItem: {
         color: colors.primary,
         fontWeight: 'bold',
     },

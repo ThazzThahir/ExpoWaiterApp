@@ -1,11 +1,10 @@
 import React from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, Alert } from 'react-native';
-import { Clock, Users, ShoppingBag, DollarSign, Edit, Printer, Check } from 'lucide-react-native';
+import { Users, ShoppingBag, DollarSign, Printer } from 'lucide-react-native';
 import { Order } from '@/types';
 import { colors } from '@/constants/colors';
 import { formatCurrency, formatDate } from '@/utils/validation';
 import { OrderDetailModal } from './OrderDetailModal';
-import { OrderModificationModal } from './OrderModificationModal';
 
 interface OrderCardProps {
     order: Order;
@@ -76,7 +75,6 @@ export const OrderCard: React.FC<OrderCardProps> = ({
     };
 
     const [modalVisible, setModalVisible] = React.useState(false);
-    const [modModalVisible, setModModalVisible] = React.useState(false);
     const [orderState, setOrderState] = React.useState(order);
 
     // Handler for status change
@@ -86,7 +84,6 @@ export const OrderCard: React.FC<OrderCardProps> = ({
     };
     // Handler for cancel order
     const handleCancelOrder = () => {
-        setModModalVisible(false);
         // Optionally, call a prop or store action
     };
     // Handler for cancel item
@@ -129,61 +126,13 @@ export const OrderCard: React.FC<OrderCardProps> = ({
                             <Text style={styles.infoText}>{formatCurrency(order.total)}</Text>
                         </View>
                     </View>
-
-                    <View style={styles.progressContainer}>
-                        <View style={styles.progressBackground}>
-                            <View
-                                style={[
-                                    styles.progressFill,
-                                    { width: getProgressPercentage() }
-                                ]}
-                            />
-                        </View>
-                        <View style={styles.statusLabels}>
-                            <Text style={[
-                                styles.statusLabel,
-                                order.status === 'preparing' && styles.activeStatus
-                            ]}>
-                                Preparing
-                            </Text>
-                            <Text style={[
-                                styles.statusLabel,
-                                order.status === 'serving' && styles.activeStatus
-                            ]}>
-                                Serving
-                            </Text>
-                            <Text style={[
-                                styles.statusLabel,
-                                order.status === 'completed' && styles.activeStatus
-                            ]}>
-                                Completed
-                            </Text>
-                        </View>
-                    </View>
                 </View>
 
                 <View style={styles.actions}>
-                    <TouchableOpacity style={styles.actionButton} onPress={() => setModModalVisible(true)}>
-                        <Edit size={18} color={colors.primary} />
-                        <Text style={styles.actionText}>Modify</Text>
-                    </TouchableOpacity>
-
                     {order.status === 'completed' && (
                         <TouchableOpacity style={styles.actionButton}>
                             <Printer size={18} color={colors.primary} />
                             <Text style={styles.actionText}>Print</Text>
-                        </TouchableOpacity>
-                    )}
-
-                    {order.status !== 'completed' && (
-                        <TouchableOpacity
-                            style={[styles.actionButton, styles.completeButton]}
-                            onPress={handleStatusChange}
-                        >
-                            <Check size={18} color="#fff" />
-                            <Text style={styles.completeText}>
-                                {order.status === 'preparing' ? 'Serve' : 'Complete'}
-                            </Text>
                         </TouchableOpacity>
                     )}
                 </View>
@@ -192,15 +141,6 @@ export const OrderCard: React.FC<OrderCardProps> = ({
                 visible={modalVisible}
                 onClose={() => setModalVisible(false)}
                 order={orderState}
-            />
-            <OrderModificationModal
-                visible={modModalVisible}
-                onClose={() => setModModalVisible(false)}
-                order={orderState}
-                onChangeStatus={handleChangeStatus}
-                onCancelOrder={handleCancelOrder}
-                onCancelItem={handleCancelItem}
-                showStatusChangeOption={true}
             />
         </>
     );

@@ -11,6 +11,7 @@ interface OrderState {
     getCompletedOrders: () => Order[];
     updateOrderStatus: (id: string, status: OrderStatus) => void;
     getOrderById: (id: string) => Order | undefined;
+    getOrdersByTableId: (tableId: string) => Order[];
 }
 
 // Generate random mock orders
@@ -126,5 +127,9 @@ export const useOrderStore = create<OrderState>((set, get) => ({
 
     getOrderById: (id) => {
         return get().orders.find(order => order.id === id);
+    },
+
+    getOrdersByTableId: (tableId) => {
+        return get().orders.filter(order => order.tableId === tableId);
     },
 }));
