@@ -15,8 +15,6 @@ export const TableCard: React.FC<TableCardProps> = ({ table, onPress }) => {
         switch (table.status) {
             case 'vacant':
                 return colors.vacant;
-            case 'reserved':
-                return colors.reserved;
             case 'occupied':
                 return colors.occupied;
             default:
@@ -28,8 +26,6 @@ export const TableCard: React.FC<TableCardProps> = ({ table, onPress }) => {
         switch (table.status) {
             case 'vacant':
                 return 'Vacant';
-            case 'reserved':
-                return 'Reserved';
             case 'occupied':
                 return 'Occupied';
             default:
@@ -69,11 +65,6 @@ export const TableCard: React.FC<TableCardProps> = ({ table, onPress }) => {
                         <>
                             <Clock size={16} color={colors.textLight} />
                             <Text style={styles.infoText}>{formatDuration(table.occupiedSince)}</Text>
-                        </>
-                    ) : table.status === 'reserved' && table.reservedFor ? (
-                        <>
-                            <Clock size={16} color={colors.textLight} />
-                            <Text style={styles.infoText}>{new Date(table.reservedFor).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</Text>
                         </>
                     ) : (
                         <>

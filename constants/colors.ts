@@ -12,7 +12,6 @@ export const colors = {
 
     // Status colors
     vacant: '#2ecc71',
-    reserved: '#f39c12',
     occupied: '#e74c3c',
 
     // Neutral colors

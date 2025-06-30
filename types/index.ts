@@ -1,4 +1,4 @@
-export type TableStatus = 'vacant' | 'reserved' | 'occupied';
+export type TableStatus = 'vacant' | 'occupied';
 
 export interface Table {
     id: string;
@@ -6,7 +6,6 @@ export interface Table {
     status: TableStatus;
     guestCount: number;
     occupiedSince?: string; // ISO date string
-    reservedFor?: string; // ISO date string
 }
 
 export interface OrderItem {

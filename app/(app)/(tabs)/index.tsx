@@ -11,11 +11,12 @@ import {
     Platform,
 } from 'react-native';
 import { useRouter } from 'expo-router';
-import { Filter, Plus } from 'lucide-react-native';
+import { Filter } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
 import { TableCard } from '@/components/tables/TableCard';
 import { useTableStore } from '@/store/tableStore';
 import { useCartStore } from '@/store/cartStore';
+import { useAuthStore } from '@/store/authStore';
 import { colors } from '@/constants/colors';
 import { TableStatus } from '@/types';
 
@@ -23,6 +24,7 @@ export default function TablesScreen() {
     const router = useRouter();
     const { tables, isLoading, fetchTables, filterTables, updateTableStatus } = useTableStore();
     const { setTableInfo } = useCartStore();
+    const { user } = useAuthStore();
     const [refreshing, setRefreshing] = useState(false);
     const [activeFilter, setActiveFilter] = useState<TableStatus | null>(null);
 
@@ -49,33 +51,15 @@ export default function TablesScreen() {
 
         if (table.status === 'vacant') {
             options.push({
-                text: 'Reserve Table',
+                text: 'Create Order',
                 onPress: () => {
-                    updateTableStatus(tableId, 'reserved', 2);
-                    Alert.alert('Success', `Table ${table.number} has been reserved.`);
+                    setTableInfo(tableId, table.number);
+                    router.push('/(app)/(tabs)/menu');
                 }
             });
             options.push({
-                text: 'Occupy Table',
-                onPress: () => {
-                    updateTableStatus(tableId, 'occupied', 2);
-                    Alert.alert('Success', `Table ${table.number} has been occupied.`);
-                }
-            });
-        } else if (table.status === 'reserved') {
-            options.push({
-                text: 'Cancel Reservation',
-                onPress: () => {
-                    updateTableStatus(tableId, 'vacant');
-                    Alert.alert('Success', `Reservation for Table ${table.number} has been cancelled.`);
-                }
-            });
-            options.push({
-                text: 'Occupy Table',
-                onPress: () => {
-                    updateTableStatus(tableId, 'occupied', table.guestCount);
-                    Alert.alert('Success', `Table ${table.number} has been occupied.`);
-                }
+                text: 'Cancel',
+                style: 'cancel' as const
             });
         } else if (table.status === 'occupied') {
             options.push({
@@ -85,26 +69,19 @@ export default function TablesScreen() {
                     Alert.alert('Success', `Table ${table.number} has been freed.`);
                 }
             });
+            options.push({
+                text: 'Create Order',
+                onPress: () => {
+                    setTableInfo(tableId, table.number);
+                    router.push('/(app)/(tabs)/menu');
+                }
+            });
+            options.push({
+                text: 'Cancel',
+                style: 'cancel' as const
+            });
         }
 
-        // Add option to create order for this table
-        options.push({
-            text: 'Create Order',
-            onPress: () => {
-                // Set table info in cart store
-                setTableInfo(tableId, table.number);
-                // Navigate to menu
-                router.push('/(app)/(tabs)/menu');
-            }
-        });
-
-        // Add cancel option
-        options.push({
-            text: 'Cancel',
-            style: 'cancel' as const
-        });
-
-        // Show action sheet
         Alert.alert(
             `Table ${table.number}`,
             `Status: ${table.status.charAt(0).toUpperCase() + table.status.slice(1)}`,
@@ -146,8 +123,6 @@ export default function TablesScreen() {
         switch (status) {
             case 'vacant':
                 return colors.vacant;
-            case 'reserved':
-                return colors.reserved;
             case 'occupied':
                 return colors.occupied;
             default:
@@ -157,16 +132,23 @@ export default function TablesScreen() {
 
     return (
         <View style={styles.container}>
-            <View style={styles.header}>
-                <Text style={styles.title}>Tables</Text>
+            {/* Restaurant Name at the top */}
+            <View style={styles.restaurantHeader}>
+                <Text style={styles.restaurantName}>UR’s Dine & Serve</Text>
+            </View>
+            <View style={styles.headerRow}>
                 <View style={styles.filterContainer}>
                     <Filter size={18} color={colors.textLight} style={styles.filterIcon} />
                     <View style={styles.filterButtons}>
                         {renderFilterButton(null, 'All')}
                         {renderFilterButton('vacant', 'Vacant')}
-                        {renderFilterButton('reserved', 'Reserved')}
                         {renderFilterButton('occupied', 'Occupied')}
                     </View>
+                </View>
+                <View style={styles.waiterNameContainer}>
+                    <Text style={styles.waiterNameLabel}>
+                        Waiter Name: <Text style={styles.waiterName}>{user?.username || '-'}</Text>
+                    </Text>
                 </View>
             </View>
 
@@ -202,10 +184,6 @@ export default function TablesScreen() {
                     }
                 />
             )}
-
-            <TouchableOpacity style={styles.fab}>
-                <Plus size={24} color="#fff" />
-            </TouchableOpacity>
         </View>
     );
 }
@@ -215,39 +193,77 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: colors.background,
     },
-    header: {
-        paddingHorizontal: 16,
-        paddingVertical: 12,
+    restaurantHeader: {
+        paddingTop: 10,
+        // paddingBottom: 8,
+        backgroundColor: colors.card,
+        alignItems: 'center',
+        // borderBottomWidth: 1,
+        // borderBottomColor: colors.border,
+    },
+    restaurantName: {
+        fontSize: 22,
+        fontWeight: 'bold',
+        color: colors.primaryDark,
+        letterSpacing: 1,
+    },
+    headerRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        paddingHorizontal: 8, // reduced from 16
+        paddingVertical: 4,   // reduced from 10
+        backgroundColor: colors.card,
         borderBottomWidth: 1,
         borderBottomColor: colors.border,
-        backgroundColor: colors.card,
     },
     title: {
         fontSize: 20,
         fontWeight: 'bold',
         color: colors.text,
-        marginBottom: 12,
+    },
+    waiterNameContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginLeft: 8,  
+        marginTop : 6,      // add margin to bring closer to filter
+        flexShrink: 0,
+    },
+    waiterNameLabel: {
+        fontSize: 14,         // reduced from 14
+        color: colors.textLight,
+    },
+    waiterName: {
+        fontWeight: 'bold',
+        color: colors.primaryDark,
+    },
+    header: {
+        paddingHorizontal: 16,
+        paddingVertical: 8,
+        backgroundColor: colors.card,
     },
     filterContainer: {
         flexDirection: 'row',
         alignItems: 'center',
+        marginTop : 6,
+        flexShrink: 1,
     },
     filterIcon: {
-        marginRight: 8,
+        marginRight: 4, // reduced from 8
     },
     filterButtons: {
         flexDirection: 'row',
         flex: 1,
     },
     filterButton: {
-        paddingHorizontal: 12,
-        paddingVertical: 6,
-        borderRadius: 16,
+        paddingHorizontal: 8, // reduced from 12
+        paddingVertical: 4,   // reduced from 6
+        borderRadius: 12,     // reduced from 16
         backgroundColor: colors.border,
-        marginRight: 8,
+        marginRight: 4,       // reduced from 8
     },
     filterButtonText: {
-        fontSize: 12,
+        fontSize: 11,         // reduced from 12
         fontWeight: '500',
         color: colors.text,
     },
@@ -266,21 +282,5 @@ const styles = StyleSheet.create({
     emptyText: {
         color: colors.textLight,
         fontSize: 16,
-    },
-    fab: {
-        position: 'absolute',
-        bottom: 20,
-        right: 20,
-        width: 56,
-        height: 56,
-        borderRadius: 28,
-        backgroundColor: colors.primary,
-        justifyContent: 'center',
-        alignItems: 'center',
-        elevation: 4,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.25,
-        shadowRadius: 3.84,
     },
 });

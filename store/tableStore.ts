@@ -16,9 +16,9 @@ const MOCK_TABLES: Table[] = Array.from({ length: 30 }, (_, i) => {
     const id = (i + 1).toString();
     const number = i + 1;
 
-    // Randomly assign statuses for demo purposes
-    const statuses: TableStatus[] = ['vacant', 'reserved', 'occupied'];
-    const randomIndex = Math.floor(Math.random() * 3);
+    // Only 'vacant' and 'occupied' statuses
+    const statuses: TableStatus[] = ['vacant', 'occupied'];
+    const randomIndex = Math.floor(Math.random() * 2);
     const status = statuses[randomIndex];
 
     const guestCount = status === 'vacant' ? 0 : Math.floor(Math.random() * 6) + 1;
@@ -34,12 +34,6 @@ const MOCK_TABLES: Table[] = Array.from({ length: 30 }, (_, i) => {
         // Set occupied time to a random time in the past (up to 3 hours ago)
         const occupiedSince = new Date(Date.now() - Math.floor(Math.random() * 3 * 60 * 60 * 1000));
         table.occupiedSince = occupiedSince.toISOString();
-    }
-
-    if (status === 'reserved') {
-        // Set reservation time to a random time in the future (up to 3 hours from now)
-        const reservedFor = new Date(Date.now() + Math.floor(Math.random() * 3 * 60 * 60 * 1000));
-        table.reservedFor = reservedFor.toISOString();
     }
 
     return table;
@@ -75,14 +69,8 @@ export const useTableStore = create<TableState>((set, get) => ({
 
                     if (status === 'occupied') {
                         updatedTable.occupiedSince = new Date().toISOString();
-                        updatedTable.reservedFor = undefined;
-                    } else if (status === 'reserved') {
-                        // Default reservation for 1 hour from now
-                        updatedTable.reservedFor = new Date(Date.now() + 60 * 60 * 1000).toISOString();
-                        updatedTable.occupiedSince = undefined;
                     } else {
                         updatedTable.occupiedSince = undefined;
-                        updatedTable.reservedFor = undefined;
                     }
 
                     return updatedTable;
