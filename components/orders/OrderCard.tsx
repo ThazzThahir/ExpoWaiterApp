@@ -112,6 +112,9 @@ export const OrderCard: React.FC<OrderCardProps> = ({
                             <Users size={14} color={colors.textLight} />
                             <Text style={styles.guestCount}>{order.guestCount}</Text>
                         </View>
+                        {order.guestName ? (
+                            <Text style={styles.guestName}>{order.guestName}</Text>
+                        ) : null}
                     </View>
                 </View>
 
@@ -191,6 +194,11 @@ const styles = StyleSheet.create({
         fontSize: 14,
         color: colors.textLight,
         marginLeft: 4,
+    },
+    guestName: {
+        fontSize: 14,
+        color: colors.text,
+        marginTop: 2,
     },
     content: {
         marginBottom: 12,

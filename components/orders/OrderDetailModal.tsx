@@ -20,6 +20,7 @@ export const OrderDetailModal: React.FC<OrderDetailModalProps> = ({ visible, onC
                     <ScrollView>
                         <Text style={styles.label}>Order ID: <Text style={styles.value}>{order.id}</Text></Text>
                         <Text style={styles.label}>Table: <Text style={styles.value}>T{order.tableNumber}</Text></Text>
+                        <Text style={styles.label}>Guest Name: <Text style={styles.value}>{order.guestName}</Text></Text>
                         <Text style={styles.label}>Guests: <Text style={styles.value}>{order.guestCount}</Text></Text>
                         <Text style={styles.label}>Status: <Text style={styles.value}>{order.status}</Text></Text>
                         <Text style={styles.label}>Created: <Text style={styles.value}>{formatDate(order.createdAt)}</Text></Text>

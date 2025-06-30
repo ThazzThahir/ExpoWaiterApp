@@ -61,7 +61,28 @@ export default function TablesScreen() {
             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
         }
 
-        // For both vacant and occupied tables, show create order modal
+        if (table.status === 'vacant') {
+            // Show confirmation dialog before showing guest details modal
+            Alert.alert(
+                'Create Order',
+                'Do you want to create a new order for this table?',
+                [
+                    { text: 'Cancel', style: 'cancel' },
+                    {
+                        text: 'Create Order',
+                        onPress: () => {
+                            setModalTable(table);
+                            setGuestName('');
+                            setGuestCount('1');
+                            setShowCreateOrderModal(true);
+                        }
+                    }
+                ]
+            );
+            return;
+        }
+
+        // For occupied tables, show create order modal directly (existing logic)
         setModalTable(table);
         setGuestName('');
         setGuestCount('1');

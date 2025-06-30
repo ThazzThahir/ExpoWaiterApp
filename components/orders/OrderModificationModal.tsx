@@ -29,6 +29,7 @@ export const OrderModificationModal: React.FC<OrderModificationModalProps> = ({
             <View style={styles.overlay}>
                 <View style={styles.modal}>
                     <Text style={styles.title}>Modify Order</Text>
+                    <Text style={styles.guestInfo}>Guest: {order.guestName} ({order.guestCount})</Text>
                     <ScrollView>
                         <Text style={styles.sectionTitle}>Order Items</Text>
                         {order.items.map((item) => (
@@ -69,6 +70,11 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 20,
         fontWeight: 'bold',
+        marginBottom: 12,
+        color: colors.text,
+    },
+    guestInfo: {
+        fontSize: 16,
         marginBottom: 12,
         color: colors.text,
     },
