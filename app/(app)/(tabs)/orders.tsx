@@ -8,11 +8,18 @@ import {
     ActivityIndicator,
     RefreshControl,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams } from 'expo-router';
+import { ArrowLeft } from 'lucide-react-native';
 import { OrderCard } from '@/components/orders/OrderCard';
 import { useOrderStore } from '@/store/orderStore';
 import { colors } from '@/constants/colors';
 import { OrderStatus } from '@/types';
+
+export const options = {
+    headerShown: false,
+    tabBarStyle: { display: 'none' },
+};
 
 export default function OrdersScreen() {
     const router = useRouter();
@@ -53,8 +60,11 @@ export default function OrdersScreen() {
         : getActiveOrders();
 
     return (
-        <View style={styles.container}>
+        <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }} edges={["top", "bottom"]}>
             <View style={styles.header}>
+                <TouchableOpacity onPress={() => router.replace('/(app)/(tabs)')} style={{ marginRight: 12 }}>
+                    <ArrowLeft size={24} color={colors.text} />
+                </TouchableOpacity>
                 <Text style={styles.title}>Orders</Text>
             </View>
             {isLoading && !refreshing ? (
@@ -90,7 +100,7 @@ export default function OrdersScreen() {
                     }
                 />
             )}
-        </View>
+        </SafeAreaView>
     );
 }
 
@@ -100,8 +110,10 @@ const styles = StyleSheet.create({
         backgroundColor: colors.background,
     },
     header: {
+        flexDirection: 'row',
+        alignItems: 'center',
         paddingHorizontal: 16,
-        paddingTop: 12,
+        paddingTop: 10,
         paddingBottom: 0,
         borderBottomWidth: 1,
         borderBottomColor: colors.border,

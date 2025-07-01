@@ -11,6 +11,7 @@ import {
     Animated,
     Platform,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Search, Filter, ShoppingCart } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
@@ -21,6 +22,11 @@ import { CategoryTabs } from '@/components/menu/CategoryTabs';
 import { MenuItemCard } from '@/components/menu/MenuItemCard';
 import { CartSummary } from '@/components/menu/CartSummary';
 import { MenuItem } from '@/types/menu';
+
+export const options = {
+    headerShown: false,
+    tabBarStyle: { display: 'none' },
+};
 
 export default function MenuScreen() {
     const router = useRouter();
@@ -190,115 +196,117 @@ export default function MenuScreen() {
         : getMenuItemsByCategory(selectedCategoryId);
 
     return (
-        <View style={styles.container}>
-            <View style={styles.header}>
-                <View style={styles.searchContainer}>
-                    <Search size={20} color={colors.textLight} style={styles.searchIcon} />
-                    <TextInput
-                        style={styles.searchInput}
-                        placeholder="Search menu..."
-                        value={searchQuery}
-                        onChangeText={handleSearch}
-                        placeholderTextColor={colors.textLight}
+        <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }} edges={["top", "bottom"]}>
+            <View style={styles.container}>
+                <View style={styles.header}>
+                    <View style={styles.searchContainer}>
+                        <Search size={20} color={colors.textLight} style={styles.searchIcon} />
+                        <TextInput
+                            style={styles.searchInput}
+                            placeholder="Search menu..."
+                            value={searchQuery}
+                            onChangeText={handleSearch}
+                            placeholderTextColor={colors.textLight}
+                        />
+                        {searchQuery.length > 0 && (
+                            <TouchableOpacity
+                                onPress={() => {
+                                    setSearchQuery('');
+                                    setIsSearching(false);
+                                }}
+                                style={styles.clearButton}
+                            >
+                                <Text style={styles.clearButtonText}>×</Text>
+                            </TouchableOpacity>
+                        )}
+                    </View>
+
+                    <TouchableOpacity
+                        style={styles.cartButton}
+                        onPress={handleViewCart}
+                        activeOpacity={0.7}
+                    >
+                        <ShoppingCart size={24} color={colors.text} />
+                        {getItemCount() > 0 && (
+                            <View style={styles.cartBadge}>
+                                <Text style={styles.cartBadgeText}>{getItemCount()}</Text>
+                            </View>
+                        )}
+                    </TouchableOpacity>
+                </View>
+
+                {!isSearching && (
+                    <CategoryTabs
+                        categories={categories}
+                        selectedCategoryId={selectedCategoryId}
+                        onSelectCategory={handleCategorySelect}
                     />
-                    {searchQuery.length > 0 && (
-                        <TouchableOpacity
-                            onPress={() => {
-                                setSearchQuery('');
-                                setIsSearching(false);
-                            }}
-                            style={styles.clearButton}
-                        >
-                            <Text style={styles.clearButtonText}>×</Text>
-                        </TouchableOpacity>
-                    )}
-                </View>
+                )}
 
-                <TouchableOpacity
-                    style={styles.cartButton}
-                    onPress={handleViewCart}
-                    activeOpacity={0.7}
-                >
-                    <ShoppingCart size={24} color={colors.text} />
-                    {getItemCount() > 0 && (
-                        <View style={styles.cartBadge}>
-                            <Text style={styles.cartBadgeText}>{getItemCount()}</Text>
-                        </View>
-                    )}
-                </TouchableOpacity>
-            </View>
+                {isLoading && !refreshing ? (
+                    <View style={styles.loadingContainer}>
+                        <ActivityIndicator size="large" color={colors.primary} />
+                    </View>
+                ) : (
+                    <Animated.View
+                        style={[
+                            { flex: 1 },
+                            {
+                                opacity: fadeAnim,
+                                transform: [{ scale: scaleAnim }]
+                            }
+                        ]}
+                    >
+                        <FlatList
+                            data={displayedItems}
+                            renderItem={({ item }) => (
+                                <MenuItemCard
+                                    item={item}
+                                    onPress={handleItemPress}
+                                    onAddToCart={handleAddToCart}
+                                />
+                            )}
+                            keyExtractor={(item) => item.id}
+                            numColumns={3}
+                            contentContainerStyle={styles.menuGrid}
+                            refreshControl={
+                                <RefreshControl
+                                    refreshing={refreshing}
+                                    onRefresh={handleRefresh}
+                                    colors={[colors.primary]}
+                                    tintColor={colors.primary}
+                                />
+                            }
+                            ListEmptyComponent={
+                                <View style={styles.emptyContainer}>
+                                    <Text style={styles.emptyText}>
+                                        {isSearching
+                                            ? `No results found for "${searchQuery}"`
+                                            : 'No items in this category'}
+                                    </Text>
+                                </View>
+                            }
+                        />
+                    </Animated.View>
+                )}
 
-            {!isSearching && (
-                <CategoryTabs
-                    categories={categories}
-                    selectedCategoryId={selectedCategoryId}
-                    onSelectCategory={handleCategorySelect}
-                />
-            )}
-
-            {isLoading && !refreshing ? (
-                <View style={styles.loadingContainer}>
-                    <ActivityIndicator size="large" color={colors.primary} />
-                </View>
-            ) : (
                 <Animated.View
                     style={[
-                        { flex: 1 },
+                        styles.cartSummaryContainer,
                         {
-                            opacity: fadeAnim,
-                            transform: [{ scale: scaleAnim }]
+                            transform: [{ translateY: cartSlideAnim }],
+                            opacity: cartOpacityAnim
                         }
                     ]}
                 >
-                    <FlatList
-                        data={displayedItems}
-                        renderItem={({ item }) => (
-                            <MenuItemCard
-                                item={item}
-                                onPress={handleItemPress}
-                                onAddToCart={handleAddToCart}
-                            />
-                        )}
-                        keyExtractor={(item) => item.id}
-                        numColumns={3}
-                        contentContainerStyle={styles.menuGrid}
-                        refreshControl={
-                            <RefreshControl
-                                refreshing={refreshing}
-                                onRefresh={handleRefresh}
-                                colors={[colors.primary]}
-                                tintColor={colors.primary}
-                            />
-                        }
-                        ListEmptyComponent={
-                            <View style={styles.emptyContainer}>
-                                <Text style={styles.emptyText}>
-                                    {isSearching
-                                        ? `No results found for "${searchQuery}"`
-                                        : 'No items in this category'}
-                                </Text>
-                            </View>
-                        }
+                    <CartSummary
+                        itemCount={getItemCount()}
+                        totalAmount={cart.totalAmount}
+                        onPress={handleViewCart}
                     />
                 </Animated.View>
-            )}
-
-            <Animated.View
-                style={[
-                    styles.cartSummaryContainer,
-                    {
-                        transform: [{ translateY: cartSlideAnim }],
-                        opacity: cartOpacityAnim
-                    }
-                ]}
-            >
-                <CartSummary
-                    itemCount={getItemCount()}
-                    totalAmount={cart.totalAmount}
-                    onPress={handleViewCart}
-                />
-            </Animated.View>
-        </View>
+            </View>
+        </SafeAreaView>
     );
 }
 

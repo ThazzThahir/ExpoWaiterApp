@@ -143,7 +143,7 @@ export default function TablesScreen() {
         if (!orderTable) return;
         setModalTable(orderTable);
         setGuestName('');
-        setGuestCount('1');
+        setGuestCount('');
         setShowOrderDetailsModal(false);
         setShowCreateOrderModal(true);
     };
