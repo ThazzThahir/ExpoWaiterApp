@@ -8,7 +8,7 @@ import {
     ActivityIndicator,
     RefreshControl,
 } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import { OrderCard } from '@/components/orders/OrderCard';
 import { useOrderStore } from '@/store/orderStore';
 import { colors } from '@/constants/colors';
@@ -16,6 +16,7 @@ import { OrderStatus } from '@/types';
 
 export default function OrdersScreen() {
     const router = useRouter();
+    const { tableId } = useLocalSearchParams();
     const {
         orders,
         isLoading,
@@ -46,7 +47,10 @@ export default function OrdersScreen() {
         updateOrderStatus(orderId, status);
     };
 
-    const displayedOrders = getActiveOrders();
+    // Filter orders by tableId if provided
+    const displayedOrders = tableId
+        ? getActiveOrders().filter(order => order.tableId === tableId)
+        : getActiveOrders();
 
     return (
         <View style={styles.container}>

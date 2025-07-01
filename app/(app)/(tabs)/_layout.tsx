@@ -1,20 +1,26 @@
-import { Tabs } from "expo-router";
+import { Tabs, useSegments } from "expo-router";
 import { Home, Menu, ShoppingBag, Settings } from "lucide-react-native";
 import { useAppTheme } from "../../../components/common/AppThemeProvider";
 
 export default function TabsLayout() {
     const { colors } = useAppTheme();
+    const segments = useSegments();
+    // Hide header and tab bar for all main screens
+    const lastSegment = segments[segments.length - 1];
+    const hideNav = [undefined, '(tabs)', 'index', 'menu', 'orders', 'settings'].includes(lastSegment);
 
     return (
         <Tabs
             screenOptions={{
-                headerShown: true,
+                headerShown: !hideNav,
+                tabBarStyle: hideNav
+                    ? { display: "none" }
+                    : {
+                        backgroundColor: colors.card,
+                        borderTopColor: colors.border,
+                    },
                 tabBarActiveTintColor: colors.primary,
                 tabBarInactiveTintColor: colors.textLight,
-                tabBarStyle: {
-                    backgroundColor: colors.card,
-                    borderTopColor: colors.border,
-                },
                 headerStyle: {
                     backgroundColor: colors.card,
                 },
@@ -42,7 +48,7 @@ export default function TabsLayout() {
                     tabBarIcon: ({ color, size }) => <ShoppingBag size={size} color={color} />,
                 }}
             />
-            
+
         </Tabs>
     );
 }

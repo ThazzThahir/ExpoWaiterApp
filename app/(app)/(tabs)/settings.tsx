@@ -8,6 +8,7 @@ import {
     Switch,
     Alert,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import {
     User,
@@ -16,9 +17,15 @@ import {
     Info,
     LogOut,
     ChevronRight,
+    ArrowLeft,
 } from 'lucide-react-native';
 import { useAuthStore } from '@/store/authStore';
 import { useAppTheme } from '@/components/common/AppThemeProvider';
+
+export const options = {
+    headerShown: false,
+    tabBarStyle: { display: 'none' },
+};
 
 export default function SettingsScreen() {
     const router = useRouter();
@@ -170,61 +177,66 @@ export default function SettingsScreen() {
     };
 
     return (
-        <ScrollView style={[styles.container, { backgroundColor: colors.background }]}>
-            <View style={dynamicStyles.header}>
-                <Text style={dynamicStyles.title}>Settings</Text>
-            </View>
-
-            <View style={dynamicStyles.profileSection}>
-                <View style={dynamicStyles.profileIconContainer}>
-                    <User size={32} color="#fff" />
+        <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }} edges={["top", "bottom"]}>
+            <ScrollView style={[styles.container, { backgroundColor: colors.background }]}>
+                <View style={[dynamicStyles.header, { flexDirection: 'row', alignItems: 'center' }]}>
+                    <TouchableOpacity onPress={() => router.replace('/(app)/(tabs)')} style={{ marginRight: 12 }}>
+                        <ArrowLeft size={24} color={colors.text} />
+                    </TouchableOpacity>
+                    <Text style={dynamicStyles.title}>Settings</Text>
                 </View>
-                <View style={styles.profileInfo}>
-                    <Text style={dynamicStyles.profileName}>{user?.name || "User"}</Text>
-                    <Text style={dynamicStyles.profileRole}>{user?.role || "Staff"}</Text>
+
+                <View style={dynamicStyles.profileSection}>
+                    <View style={dynamicStyles.profileIconContainer}>
+                        <User size={32} color="#fff" />
+                    </View>
+                    <View style={styles.profileInfo}>
+                        <Text style={dynamicStyles.profileName}>{user?.name || "User"}</Text>
+                        <Text style={dynamicStyles.profileRole}>{user?.role || "Staff"}</Text>
+                    </View>
                 </View>
-            </View>
 
-            <View style={dynamicStyles.section}>
-                <Text style={dynamicStyles.sectionTitle}>Preferences</Text>
+                <View style={dynamicStyles.section}>
+                    <Text style={dynamicStyles.sectionTitle}>Preferences</Text>
 
-                {renderSettingItem(
-                    <Bell size={22} color={colors.primary} />,
-                    "Notifications",
-                    <Switch
-                        value={notifications}
-                        onValueChange={setNotifications}
-                        trackColor={{ false: colors.border, true: colors.primaryLight }}
-                        thumbColor={notifications ? colors.primary : "#f4f3f4"}
-                    />
-                )}
-            </View>
+                    {renderSettingItem(
+                        <Bell size={22} color={colors.primary} />,
+                        "Notifications",
+                        <Switch
+                            value={notifications}
+                            onValueChange={setNotifications}
+                            trackColor={{ false: colors.border, true: colors.primaryLight }}
+                            thumbColor={notifications ? colors.primary : "#f4f3f4"}
+                        />
+                    )}
+                </View>
 
-            <View style={dynamicStyles.section}>
-                <Text style={dynamicStyles.sectionTitle}>Support</Text>
+                <View style={dynamicStyles.section}>
+                    <Text style={dynamicStyles.sectionTitle}>Support</Text>
 
-                {renderSettingItem(
-                    <HelpCircle size={22} color={colors.primary} />,
-                    "Help & Support",
-                    undefined,
-                    () => console.log("Help & Support pressed")
-                )}
+                    {renderSettingItem(
+                        <HelpCircle size={22} color={colors.primary} />,
+                        "Help & Support",
+                        undefined,
+                        () => console.log("Help & Support pressed")
+                    )}
 
-                {renderSettingItem(
-                    <Info size={22} color={colors.primary} />,
-                    "About",
-                    undefined,
-                    () => console.log("About pressed")
-                )}
-            </View>
+                    {renderSettingItem(
+                        <Info size={22} color={colors.primary} />,
+                        "About",
+                        undefined,
+                        () => console.log("About pressed")
+                    )}
+                </View>
 
-            <TouchableOpacity style={dynamicStyles.logoutButton} onPress={handleLogout}>
-                <LogOut size={20} color="#e74c3c" />
-                <Text style={dynamicStyles.logoutText}>Logout</Text>
-            </TouchableOpacity>
+                <TouchableOpacity style={dynamicStyles.logoutButton} onPress={handleLogout}>
+                    <LogOut size={20} color="#e74c3c" />
+                    <Text style={dynamicStyles.logoutText}>Logout</Text>
+                </TouchableOpacity>
 
-            <Text style={dynamicStyles.versionText}>Version 1.0.0</Text>
-        </ScrollView>
+                <Text style={dynamicStyles.versionText}>Version 1.0.0</Text>
+            </ScrollView>
+        </SafeAreaView>
     );
 }
 
