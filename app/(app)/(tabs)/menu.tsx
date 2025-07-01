@@ -13,7 +13,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
-import { Search, Filter, ShoppingCart } from 'lucide-react-native';
+import { Search, Filter, ShoppingCart, ArrowLeft } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
 import { colors } from '@/constants/colors';
 import { useMenuStore } from '@/store/menuStore';
@@ -197,6 +197,13 @@ export default function MenuScreen() {
 
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }} edges={["top", "bottom"]}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingTop: 10, backgroundColor: colors.card, borderBottomWidth: 1, borderBottomColor: colors.border }}>
+                <TouchableOpacity onPress={() => router.replace('/(app)/(tabs)')} style={{ marginRight: 12 }}>
+                    <ArrowLeft size={24} color={colors.text} />
+                </TouchableOpacity>
+                <Text style={{ fontSize: 20, fontWeight: 'bold', color: colors.text }}>Menu</Text>
+            </View>
+
             <View style={styles.container}>
                 <View style={styles.header}>
                     <View style={styles.searchContainer}>

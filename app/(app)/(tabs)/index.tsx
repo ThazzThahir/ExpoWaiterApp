@@ -269,6 +269,7 @@ export default function TablesScreen() {
                                 value={guestName}
                                 onChangeText={setGuestName}
                                 style={{ borderWidth: 1, borderColor: colors.border, borderRadius: 8, padding: 8, marginBottom: 12 }}
+                                placeholderTextColor={Platform.OS === 'ios' ? '#888' : undefined}
                             />
                             <TextInput
                                 placeholder="Number of Guests"
@@ -276,6 +277,7 @@ export default function TablesScreen() {
                                 onChangeText={setGuestCount}
                                 keyboardType="numeric"
                                 style={{ borderWidth: 1, borderColor: colors.border, borderRadius: 8, padding: 8, marginBottom: 12 }}
+                                placeholderTextColor={Platform.OS === 'ios' ? '#888' : undefined}
                             />
 
                             <View style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>

@@ -13,6 +13,7 @@ export const colors = {
     // Status colors
     vacant: '#2ecc71',
     occupied: '#e74c3c',
+    success: '#27ae60', // Added for success/positive actions
 
     // Neutral colors
     background: '#f8f9fa',

@@ -163,6 +163,14 @@ export const useOrderStore = create<OrderState>((set, get) => ({
             orders: [newOrder, ...state.orders]
         }));
 
+        // Update table status to occupied after creating order
+        try {
+            const { useTableStore } = require('./tableStore');
+            useTableStore.getState().updateTableStatus(tableId, 'occupied', guestCount);
+        } catch (e) {
+            // handle error if needed
+        }
+
         return newOrder;
     },
 }));

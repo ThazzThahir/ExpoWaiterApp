@@ -1,151 +1,194 @@
-import React from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, Alert } from 'react-native';
-import { Users, ShoppingBag, DollarSign, Printer } from 'lucide-react-native';
+import React, { useState } from 'react';
+import { StyleSheet, Text, View, TouchableOpacity, Alert, Modal, TextInput, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
+import { Users, ShoppingBag, DollarSign, Printer, Edit, ReceiptText } from 'lucide-react-native';
 import { Order } from '@/types';
 import { colors } from '@/constants/colors';
 import { formatCurrency, formatDate } from '@/utils/validation';
-import { OrderDetailModal } from './OrderDetailModal';
 
 interface OrderCardProps {
     order: Order;
-    onPress: (orderId: string) => void;
-    onStatusChange: (orderId: string, status: 'preparing' | 'serving' | 'completed') => void;
 }
 
-export const OrderCard: React.FC<OrderCardProps> = ({
-    order,
-    onPress,
-    onStatusChange,
-}) => {
-    const getProgressPercentage = () => {
-        switch (order.status) {
-            case 'preparing':
-                return '33%';
-            case 'serving':
-                return '66%';
-            case 'completed':
-                return '100%';
-            default:
-                return '0%';
-        }
-    };
+export const OrderCard: React.FC<OrderCardProps> = ({ order }) => {
+    // Local state for mock logic
+    const [orderState, setOrderState] = useState(order);
+    const [isModifyModalVisible, setModifyModalVisible] = useState(false);
+    const [isPrintModalVisible, setPrintModalVisible] = useState(false);
+    const [editGuestName, setEditGuestName] = useState(order.guestName);
+    const [editGuestCount, setEditGuestCount] = useState(String(order.guestCount));
+    const [editItems, setEditItems] = useState(order.items.map(item => ({ ...item })));
+    const [billRequested, setBillRequested] = useState(false);
 
-    const getNextStatus = () => {
-        switch (order.status) {
-            case 'preparing':
-                return 'serving';
-            case 'serving':
-                return 'completed';
-            default:
-                return order.status;
-        }
-    };
-
-    const handleStatusChange = () => {
-        if (order.status !== 'completed') {
-            const nextStatus = getNextStatus();
-            const updateStatus = () => {
-                setOrderState({ ...orderState, status: nextStatus });
-                onStatusChange(order.id, nextStatus);
-            };
-            if (nextStatus === 'completed') {
-                // Show confirmation before completing
-                Alert.alert(
-                    'Confirm Completion',
-                    'Are you sure you want to mark this order as Completed?',
-                    [
-                        { text: 'Cancel', style: 'cancel' },
-                        { text: 'Yes, Complete Order', style: 'destructive', onPress: updateStatus },
-                    ]
-                );
-            } else if (nextStatus === 'serving') {
-                // Show confirmation before serving
-                Alert.alert(
-                    'Confirm Serve',
-                    'Are you sure you want to mark this order as Serving?',
-                    [
-                        { text: 'Cancel', style: 'cancel' },
-                        { text: 'Yes, Mark as Serving', style: 'default', onPress: updateStatus },
-                    ]
-                );
-            } else {
-                updateStatus();
-            }
-        }
-    };
-
-    const [modalVisible, setModalVisible] = React.useState(false);
-    const [orderState, setOrderState] = React.useState(order);
-
-    // Handler for status change
-    const handleChangeStatus = (status: 'preparing' | 'serving' | 'completed') => {
-        setOrderState({ ...orderState, status });
-        onStatusChange(order.id, status);
-    };
-    // Handler for cancel order
-    const handleCancelOrder = () => {
-        // Optionally, call a prop or store action
-    };
-    // Handler for cancel item
-    const handleCancelItem = (itemId: string) => {
+    // Handle Modify Save
+    const handleSaveEdit = () => {
         setOrderState({
             ...orderState,
-            items: orderState.items.filter(item => item.id !== itemId)
+            guestName: editGuestName,
+            guestCount: Number(editGuestCount),
+            items: editItems,
+            total: editItems.reduce((sum, item) => sum + item.price * item.quantity, 0),
         });
+        setModifyModalVisible(false);
+    };
+
+    // Handle Request Bill
+    const handleRequestBill = () => {
+        setBillRequested(true);
+        Alert.alert('Bill Requested', 'The bill has been requested for this order.');
+    };
+
+    // Handle Print (just open modal)
+    const handlePrint = () => {
+        setPrintModalVisible(true);
+    };
+
+    // Handle item quantity change
+    const handleItemQtyChange = (idx: number, qty: string) => {
+        const newItems = [...editItems];
+        newItems[idx].quantity = Number(qty) || 1;
+        setEditItems(newItems);
     };
 
     return (
-        <>
-            <TouchableOpacity
-                style={styles.container}
-                onPress={() => setModalVisible(true)}
-                activeOpacity={0.7}
-            >
-                <View style={styles.header}>
-                    <View>
-                        <Text style={styles.orderId}>{order.id}</Text>
-                        <Text style={styles.timestamp}>{formatDate(order.createdAt)}</Text>
+        <View style={styles.container}>
+            {/* Order Info */}
+            <View style={styles.header}>
+                <View>
+                    <Text style={styles.orderId}>Order #{orderState.id}</Text>
+                    <Text style={styles.timestamp}>{formatDate(orderState.createdAt)}</Text>
+                </View>
+                <View style={styles.tableInfo}>
+                    <Text style={styles.tableNumber}>T{orderState.tableNumber}</Text>
+                    <View style={styles.guestInfo}>
+                        <Users size={14} color={colors.textLight} />
+                        <Text style={styles.guestCount}>{orderState.guestCount}</Text>
                     </View>
-                    <View style={styles.tableInfo}>
-                        <Text style={styles.tableNumber}>T{order.tableNumber}</Text>
-                        <View style={styles.guestInfo}>
-                            <Users size={14} color={colors.textLight} />
-                            <Text style={styles.guestCount}>{order.guestCount}</Text>
-                        </View>
-                        {order.guestName ? (
-                            <Text style={styles.guestName}>{order.guestName}</Text>
-                        ) : null}
+                    {orderState.guestName ? (
+                        <Text style={styles.guestName}>{orderState.guestName}</Text>
+                    ) : null}
+                </View>
+            </View>
+            <View style={styles.content}>
+                <View style={styles.infoRow}>
+                    <View style={styles.infoItem}>
+                        <ShoppingBag size={16} color={colors.textLight} />
+                        <Text style={styles.infoText}>{orderState.items.length} items</Text>
+                    </View>
+                    <View style={styles.infoItem}>
+                        <DollarSign size={16} color={colors.textLight} />
+                        <Text style={styles.infoText}>{formatCurrency(orderState.total)}</Text>
                     </View>
                 </View>
-
-                <View style={styles.content}>
-                    <View style={styles.infoRow}>
-                        <View style={styles.infoItem}>
-                            <ShoppingBag size={16} color={colors.textLight} />
-                            <Text style={styles.infoText}>{order.items.length} items</Text>
+                <View style={{ marginTop: 8 }}>
+                    {orderState.items.map(item => (
+                        <View key={item.id} style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 2 }}>
+                            <Text style={{ color: colors.text }}>{item.name} x{item.quantity}</Text>
+                            <Text style={{ color: colors.textLight }}>{formatCurrency(item.price * item.quantity)}</Text>
                         </View>
-                        <View style={styles.infoItem}>
-                            <DollarSign size={16} color={colors.textLight} />
-                            <Text style={styles.infoText}>{formatCurrency(order.total)}</Text>
-                        </View>
-                    </View>
+                    ))}
                 </View>
-
-                <View style={styles.actions}>
-                    {order.status === 'completed' && (
-                        <TouchableOpacity style={styles.actionButton}>
+            </View>
+            {/* Actions */}
+            <View style={styles.actions}>
+                {!billRequested ? (
+                    <>
+                        <TouchableOpacity style={styles.actionButton} onPress={() => setModifyModalVisible(true)}>
+                            <Edit size={18} color={colors.primary} />
+                            <Text style={styles.actionText}>Modify</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={[styles.actionButton, { borderColor: colors.primary }]} onPress={handleRequestBill}>
+                            <ReceiptText size={18} color={colors.primary} />
+                            <Text style={styles.actionText}>Request Bill</Text>
+                        </TouchableOpacity>
+                    </>
+                ) : (
+                    <>
+                        <View style={[styles.actionButton, { borderColor: colors.success, backgroundColor: '#eaffea' }]}>
+                            <Text style={[styles.actionText, { color: colors.success }]}>Bill Requested</Text>
+                        </View>
+                        <TouchableOpacity style={styles.actionButton} onPress={handlePrint}>
                             <Printer size={18} color={colors.primary} />
                             <Text style={styles.actionText}>Print</Text>
                         </TouchableOpacity>
-                    )}
+                    </>
+                )}
+            </View>
+            {/* Modify Modal */}
+            <Modal visible={isModifyModalVisible} animationType="slide" transparent>
+                <KeyboardAvoidingView
+                    style={styles.modalOverlay}
+                    behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+                >
+                    <View style={styles.modalContent}>
+                        <Text style={styles.modalTitle}>Modify Order</Text>
+                        <ScrollView>
+                            <Text style={styles.label}>Guest Name</Text>
+                            <TextInput
+                                style={styles.input}
+                                value={editGuestName}
+                                onChangeText={setEditGuestName}
+                                placeholder="Guest Name"
+                                placeholderTextColor={Platform.OS === 'ios' ? '#888' : undefined}
+                            />
+                            <Text style={styles.label}>Number of Guests</Text>
+                            <TextInput
+                                style={styles.input}
+                                value={editGuestCount}
+                                onChangeText={setEditGuestCount}
+                                keyboardType="number-pad"
+                                placeholder="Guests"
+                                placeholderTextColor={Platform.OS === 'ios' ? '#888' : undefined}
+                            />
+                            <Text style={styles.label}>Order Items</Text>
+                            {editItems.map((item, idx) => (
+                                <View key={item.id} style={styles.itemEditRow}>
+                                    <Text style={{ flex: 1 }}>{item.name}</Text>
+                                    <TextInput
+                                        style={styles.qtyInput}
+                                        value={String(item.quantity)}
+                                        onChangeText={qty => handleItemQtyChange(idx, qty)}
+                                        keyboardType="number-pad"
+                                    />
+                                    <Text style={{ marginLeft: 8 }}>{formatCurrency(item.price * item.quantity)}</Text>
+                                </View>
+                            ))}
+                        </ScrollView>
+                        <View style={{ flexDirection: 'row', justifyContent: 'flex-end', marginTop: 16 }}>
+                            <TouchableOpacity onPress={() => setModifyModalVisible(false)} style={[styles.actionButton, { marginRight: 8 }]}>
+                                <Text style={styles.actionText}>Cancel</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity onPress={handleSaveEdit} style={[styles.actionButton, { borderColor: colors.primary, backgroundColor: colors.primary }]}>
+                                <Text style={[styles.actionText, { color: '#fff' }]}>Save</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                </KeyboardAvoidingView>
+            </Modal>
+            {/* Print Modal */}
+            <Modal visible={isPrintModalVisible} animationType="slide" transparent>
+                <View style={styles.modalOverlay}>
+                    <View style={styles.modalContent}>
+                        <Text style={styles.modalTitle}>Bill Preview</Text>
+                        <Text style={styles.restaurantName}>Expo Waiter Restaurant</Text>
+                        <Text style={styles.label}>Table: T{orderState.tableNumber}</Text>
+                        <Text style={styles.label}>Guest: {orderState.guestName} ({orderState.guestCount})</Text>
+                        <View style={{ marginVertical: 12 }}>
+                            {orderState.items.map(item => (
+                                <View key={item.id} style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 2 }}>
+                                    <Text>{item.name} x{item.quantity}</Text>
+                                    <Text>{formatCurrency(item.price * item.quantity)}</Text>
+                                </View>
+                            ))}
+                        </View>
+                        <Text style={styles.label}>Total: {formatCurrency(orderState.total)}</Text>
+                        <Text style={styles.thankYou}>Thank you for dining with us!</Text>
+                        <TouchableOpacity onPress={() => setPrintModalVisible(false)} style={[styles.actionButton, { marginTop: 16, alignSelf: 'center' }]}>
+                            <Text style={styles.actionText}>Close</Text>
+                        </TouchableOpacity>
+                    </View>
                 </View>
-            </TouchableOpacity>
-            <OrderDetailModal
-                visible={modalVisible}
-                onClose={() => setModalVisible(false)}
-                order={orderState}
-            />
-        </>
+            </Modal>
+        </View>
     );
 };
 
@@ -272,5 +315,67 @@ const styles = StyleSheet.create({
         marginLeft: 4,
         fontSize: 14,
         color: '#fff',
+    },
+    modalOverlay: {
+        flex: 1,
+        backgroundColor: 'rgba(0,0,0,0.4)',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    modalContent: {
+        backgroundColor: '#fff',
+        borderRadius: 16,
+        padding: 20,
+        width: '90%',
+        maxHeight: '90%',
+    },
+    modalTitle: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        marginBottom: 12,
+        color: colors.text,
+        alignSelf: 'center',
+    },
+    label: {
+        fontWeight: 'bold',
+        marginTop: 8,
+        color: colors.text,
+    },
+    input: {
+        borderWidth: 1,
+        borderColor: colors.border,
+        borderRadius: 8,
+        padding: 8,
+        marginTop: 4,
+        marginBottom: 8,
+        color: colors.text,
+    },
+    itemEditRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 6,
+    },
+    qtyInput: {
+        borderWidth: 1,
+        borderColor: colors.border,
+        borderRadius: 6,
+        width: 40,
+        padding: 4,
+        textAlign: 'center',
+        marginLeft: 8,
+        color: colors.text,
+    },
+    restaurantName: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        alignSelf: 'center',
+        marginBottom: 8,
+        color: colors.primary,
+    },
+    thankYou: {
+        marginTop: 16,
+        fontSize: 16,
+        color: colors.success,
+        alignSelf: 'center',
     },
 });
